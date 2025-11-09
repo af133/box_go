@@ -10,14 +10,17 @@ class GambarArea extends Model
     use HasFactory;
 
     protected $table = 'gambar_area';
+    protected $primaryKey = 'id_gambar_area';
+    protected $keyType = 'int';
 
     protected $fillable = [
+        'id_lokasi',
         'path_gambar',
     ];
 
     // Relasi ke Lokasi
-    public function lokasis()
+    public function lokasi()
     {
-        return $this->hasMany(Lokasi::class, 'id_gambar_area');
+        return $this->belongsTo(Lokasi::class, 'id_lokasi');
     }
 }

@@ -10,6 +10,8 @@ class Pelanggan extends Model
     use HasFactory;
 
     protected $table = 'pelanggan';
+    protected $primaryKey = 'id_pelanggan';
+    protected $keyType = 'int';
 
     protected $fillable = [
         'nama',
@@ -24,7 +26,7 @@ class Pelanggan extends Model
     ];
 
     // Relasi ke Chat
-    public function chats()
+    public function chat()
     {
         return $this->hasMany(Chat::class, 'id_pelanggan');
     }

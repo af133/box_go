@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('order', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_mitra')->constrained('mitra')->onDelete('cascade');
+            $table->foreignId('id_pelanggan')->constrained('pelanggan')->onDelete('cascade');
+            $table->foreignId('id_lokasi')->constrained('lokasi')->onDelete('cascade');
             $table->enum('status_pemesanan', ['pending', 'paid', 'failed'])->default('pending');
             $table->timestamps();
         });

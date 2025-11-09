@@ -8,15 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('gambar_area', function (Blueprint $table) {
+        Schema::create('lokasi', function (Blueprint $table) {
             $table->id();
-            $table->string('path_gambar');
+            $table->foreignId('id_mitra')->constrained('mitra')->onDelete('cascade');
+            $table->string('nama_tempat');
+            $table->text('alamat');
+            $table->geometry('area'); // Polygon
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('gambar_area');
+        Schema::dropIfExists('lokasi');
     }
 };

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('nama');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('nomor_hp')->nullable();
+            $table->string('nomor_hp')->unique()->nullable();
             $table->string('path_profil')->nullable();
             $table->timestamps();
         });

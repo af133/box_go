@@ -10,6 +10,8 @@ class Mitra extends Model
     use HasFactory;
 
     protected $table = 'mitra';
+    protected $primaryKey = 'id_mitra';
+    protected $keyType = 'int';
 
     protected $fillable = [
         'nama',
@@ -24,19 +26,19 @@ class Mitra extends Model
     ];
 
     // Relasi ke Lokasi
-    public function lokasis()
+    public function lokasi()
     {
         return $this->hasMany(Lokasi::class, 'id_mitra');
     }
 
     // Relasi ke Order
-    public function orders()
+    public function order()
     {
         return $this->hasMany(Order::class, 'id_mitra');
     }
 
     // Relasi ke Chat
-    public function chats()
+    public function chat()
     {
         return $this->hasMany(Chat::class, 'id_mitra');
     }
