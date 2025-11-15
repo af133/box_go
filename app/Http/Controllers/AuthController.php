@@ -20,7 +20,7 @@ class AuthController extends Controller
             'role' => 'required|in:admin,mitra,pelanggan',
             'nama' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
         ]);
 
         $data = [
@@ -67,7 +67,7 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Email atau password salah.'],
+                'message' => ['Email atau password salah.'],
             ]);
         }
 

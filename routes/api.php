@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 Route::get('/hello', function() {
     return response()->json(['message' => 'Hello, World!']);
@@ -8,5 +9,5 @@ Route::get('/hello', function() {
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-Route::post('/register', [App\Http\Controllers\AuthController::class, 'register']);
-Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);

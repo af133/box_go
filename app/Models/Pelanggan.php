@@ -1,31 +1,36 @@
 <?php
 
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 
-class Pelanggan extends Model
+class Pelanggan extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'pelanggan';
 
     protected $fillable = [
         'nama',
-        'email',
-        'password',
+        'id_email',
         'nomor_hp',
         'path_profil',
     ];
 
-    protected $hidden = [
-        'password',
-    ];
-
+    public function email(){
+        return $this->belongsTo(Email::class,'id_email');
+    }
     // Relasi ke Chat
     public function chats()
     {
         return $this->hasMany(Chat::class, 'id_pelanggan');
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'id_pelanggan');
     }
 }

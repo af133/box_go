@@ -3,37 +3,32 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 
-class Mitra extends Model
+class Mitra extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'mitra';
 
     protected $fillable = [
         'nama',
-        'email',
-        'password',
+        'id_email',
         'nomor_hp',
         'path_profil',
     ];
 
-    protected $hidden = [
-        'password',
-    ];
-
+    public function email(){
+        return $this->belongsTo(Email::class,'id_email');
+    }
     // Relasi ke Lokasi
     public function lokasis()
     {
         return $this->hasMany(Lokasi::class, 'id_mitra');
     }
 
-    // Relasi ke Order
-    public function orders()
-    {
-        return $this->hasMany(Order::class, 'id_mitra');
-    }
 
     // Relasi ke Chat
     public function chats()

@@ -6,17 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        Schema::create('gambar_area', function (Blueprint $table) {
-            $table->id();
-            $table->string('path_gambar');
-            $table->timestamps();
+        Schema::create('polygon', function (Blueprint $table) {
+            $table->id('id_polygon');
+            $table->longText('polygon'); // GeoJSON
         });
+
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('gambar_area');
+        //
     }
 };
