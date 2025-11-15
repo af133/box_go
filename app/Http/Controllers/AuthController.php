@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Models\Admin;
+use App\Models\Email;
 use App\Models\Mitra;
 use App\Models\Pelanggan;
 use Laravel\Sanctum\HasApiTokens;
@@ -23,24 +24,29 @@ class AuthController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
-        $data = [
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ];
-
-        if ($request->role == 'mitra') {
-            $data['nomor_hp'] = $request->nomor_hp;
-            $user = Mitra::create($data);
-        } elseif ($request->role == 'pelanggan') {
-            $data['nomor_hp'] = $request->nomor_hp;
-            $user = Pelanggan::create($data);
-        } else {
-            $user = Admin::create($data);
+        $idEmail=Email::create([
+            'email'=>$request->email,
+            'password'=>Hash::make($request->password),
+        ]);
+        if ($request->role=='admin'){
+            $user= Admin::create([
+                'id_email'=>$idEmail->id_email,
+                'nama'=>$request->nama,
+            ]);
         }
-
+        elseif($request->role=='pelanggan'){
+            $user= Pelanggan::create([
+                'id_email'=>$idEmail->id_email,
+                'nama'=>$request->nama,
+            ]);
+        }
+        else{
+            $user= Mitra::create([
+                'id_email'=>$idEmail->id_email,
+                'nama'=>$request->nama,
+            ]);
+        }
         $token = $user->createToken('api-token')->plainTextToken;
-
         return response()->json([
             'message' => 'Register berhasil',
             'user' => $user,
@@ -56,21 +62,22 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
+        $Iduser = Email::where('email', $request->email)->first();
+        
 
-        if ($request->role == 'mitra') {
-            $user = Mitra::where('email', $request->email)->first();
-        } elseif ($request->role == 'pelanggan') {
-            $user = Pelanggan::where('email', $request->email)->first();
-        } else {
-            $user = Admin::where('email', $request->email)->first();
-        }
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$Iduser || !Hash::check($request->password, $Iduser->password)) {
             throw ValidationException::withMessages([
                 'message' => ['Email atau password salah.'],
             ]);
         }
+        if ($request->role =='mitra'){
+            $user = Mitra::where('id_email', $Iduser->id_email)->first();
+        } elseif ($request->role=='pelanggan'){
+            $user = Pelanggan::where('id_email', $Iduser->id_email)->first();
+        } else {
+            $user = Admin::where('id_email', $Iduser->id_email)->first();
 
+        }
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
