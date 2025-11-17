@@ -26,20 +26,55 @@ jobs:
         flutter-version: '3.38.1'
         channel: 'stable'
 
-    - name: Verify Flutter project
+    - name: Fix Missing Buildscript
       run: |
-        echo "📁 Current directory: $(pwd)"
-        echo "📄 Files in root:"
-        ls -la
-        echo "🔍 Checking pubspec.yaml..."
-        if [ -f "pubspec.yaml" ]; then
-          echo "✅ Flutter project found!"
-          echo "📊 Flutter environment:"
-          flutter --version
-        else
-          echo "❌ ERROR: pubspec.yaml not found!"
-          exit 1
-        fi
+        echo "🔄 Adding missing buildscript to android/build.gradle..."
+        
+        # Backup original file
+        cp android/build.gradle android/build.gradle.backup
+        
+        # Create new file with buildscript
+        cat > android/build.gradle << 'EOF'
+buildscript {
+    ext.kotlin_version = '1.9.23'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.4.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}
+EOF
+        
+        echo "✅ Buildscript added to android/build.gradle"
+
+    - name: Verify Fixed Configuration
+      run: |
+        echo "📊 Updated android/build.gradle:"
+        cat android/build.gradle
+        echo "📊 Gradle wrapper:"
+        cat android/gradle/wrapper/gradle-wrapper.properties
 
     - name: Install dependencies
       run: flutter pub get
@@ -47,25 +82,9 @@ jobs:
     - name: Build APK (Release)
       run: flutter build apk --release --verbose
 
-    - name: Build APK (Debug)
-      run: flutter build apk --debug --verbose
-
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
       with:
         name: boxgo-app-release
         path: build/app/outputs/flutter-apk/app-release.apk
         retention-days: 30
-
-    - name: Upload Debug APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: boxgo-app-debug
-        path: build/app/outputs/flutter-apk/app-debug.apk
-        retention-days: 30
-
-    - name: Build Complete
-      run: |
-        echo "🎉 BUILD SUCCESS!"
-        echo "📱 APK files are available in Artifacts section"
-        echo "⬇️ Download from GitHub Actions page"
