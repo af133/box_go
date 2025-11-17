@@ -1,0 +1,71 @@
+name: Build BoxGo APK
+
+on:
+  push:
+    branches: [ frontend ]
+  pull_request:
+    branches: [ frontend ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.38.1'
+        channel: 'stable'
+
+    - name: Verify Flutter project
+      run: |
+        echo "📁 Current directory: $(pwd)"
+        echo "📄 Files in root:"
+        ls -la
+        echo "🔍 Checking pubspec.yaml..."
+        if [ -f "pubspec.yaml" ]; then
+          echo "✅ Flutter project found!"
+          echo "📊 Flutter environment:"
+          flutter --version
+        else
+          echo "❌ ERROR: pubspec.yaml not found!"
+          exit 1
+        fi
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Build APK (Release)
+      run: flutter build apk --release --verbose
+
+    - name: Build APK (Debug)
+      run: flutter build apk --debug --verbose
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: boxgo-app-release
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
+
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: boxgo-app-debug
+        path: build/app/outputs/flutter-apk/app-debug.apk
+        retention-days: 30
+
+    - name: Build Complete
+      run: |
+        echo "🎉 BUILD SUCCESS!"
+        echo "📱 APK files are available in Artifacts section"
+        echo "⬇️ Download from GitHub Actions page"
