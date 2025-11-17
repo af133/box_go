@@ -1,0 +1,110 @@
+name: Build BoxGo APK
+
+on:
+  push:
+    branches: [ frontend ]
+  pull_request:
+    branches: [ frontend ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.38.1'
+        channel: 'stable'
+
+    - name: Auto-fix Gradle Configuration
+      run: |
+        echo "🔧 AUTO-FIXING GRADLE CONFIGURATION..."
+        
+        # 1. Fix settings.gradle - update plugin versions
+        echo "📝 Updating android/settings.gradle..."
+        sed -i 's/"com.android.application" version "8\.[0-9]\.[0-9]"/"com.android.application" version "8.4.0"/g' android/settings.gradle
+        sed -i 's/"org.jetbrains.kotlin.android" version "1\.[0-9]\.[0-9]*"/"org.jetbrains.kotlin.android" version "1.9.23"/g' android/settings.gradle
+        
+        # 2. Create build.gradle using multiple echo commands
+        echo "📝 Creating android/build.gradle..."
+        echo 'buildscript {' > android/build.gradle
+        echo '    ext.kotlin_version = '\''1.9.23'\''' >> android/build.gradle
+        echo '    repositories {' >> android/build.gradle
+        echo '        google()' >> android/build.gradle
+        echo '        mavenCentral()' >> android/build.gradle
+        echo '    }' >> android/build.gradle
+        echo '    dependencies {' >> android/build.gradle
+        echo '        classpath '\''com.android.tools.build:gradle:8.4.0'\''' >> android/build.gradle
+        echo '        classpath '\''org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version'\''' >> android/build.gradle
+        echo '    }' >> android/build.gradle
+        echo '}' >> android/build.gradle
+        echo '' >> android/build.gradle
+        echo 'allprojects {' >> android/build.gradle
+        echo '    repositories {' >> android/build.gradle
+        echo '        google()' >> android/build.gradle
+        echo '        mavenCentral()' >> android/build.gradle
+        echo '    }' >> android/build.gradle
+        echo '}' >> android/build.gradle
+        echo '' >> android/build.gradle
+        echo 'rootProject.buildDir = '\''../build'\''' >> android/build.gradle
+        echo 'subprojects {' >> android/build.gradle
+        echo '    project.buildDir = "\${rootProject.buildDir}/\${project.name}"' >> android/build.gradle
+        echo '}' >> android/build.gradle
+        echo 'subprojects {' >> android/build.gradle
+        echo '    project.evaluationDependsOn(":app")' >> android/build.gradle
+        echo '}' >> android/build.gradle
+        echo '' >> android/build.gradle
+        echo 'tasks.register("clean", Delete) {' >> android/build.gradle
+        echo '    delete rootProject.buildDir' >> android/build.gradle
+        echo '}' >> android/build.gradle
+
+        # 3. Update app/build.gradle if exists
+        if [ -f "android/app/build.gradle" ]; then
+          echo "📝 Updating android/app/build.gradle..."
+          sed -i 's/compileSdk [0-9]*/compileSdk 34/g' android/app/build.gradle
+          sed -i 's/targetSdk [0-9]*/targetSdk 34/g' android/app/build.gradle
+          sed -i 's/minSdk [0-9]*/minSdk 21/g' android/app/build.gradle
+        fi
+
+        echo "✅ AUTO-FIX COMPLETED!"
+
+    - name: Verify Fixed Configuration
+      run: |
+        echo "📊 VERIFICATION:"
+        echo "=== settings.gradle ==="
+        cat android/settings.gradle
+        echo "=== build.gradle ==="
+        cat android/build.gradle
+        if [ -f "android/app/build.gradle" ]; then
+          echo "=== app/build.gradle (SDK versions) ==="
+          grep -E "(compileSdk|targetSdk|minSdk)" android/app/build.gradle
+        fi
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Build APK (Release)
+      run: flutter build apk --release --verbose
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: boxgo-app-release
+        path: build/app/outputs/flutter-apk/app-release.apk
+        retention-days: 30
+
+    - name: Build Success Notification
+      if: success()
+      run: |
+        echo "🎉 BUILD SUCCESSFUL!"
+        echo "📱 APK ready in Artifacts section"
