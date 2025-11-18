@@ -124,9 +124,7 @@ class _LoginViewState extends State<LoginView> {
 
             // Pesan error / sukses
             if (message.isNotEmpty && message != 'berhasil')
-              AuthMessage(
-                  message:
-                      "Akun tidak ditemukan. Silakan daftar terlebih dahulu."),
+              AuthMessage(message: message),
           ],
         ),
       ),

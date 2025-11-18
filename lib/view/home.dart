@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-// Asumsikan Anda memiliki file ModeSwitcher di sini
-// import '../widgets/mode_switcher.dart'; 
 
 // --- DEFINISI WARNA (PENTING UNTUK KONSISTENSI) ---
 const Color gojekGreen = Color(0xFF00AA13);
@@ -8,7 +6,10 @@ const Color darkGrey = Color(0xFF616161);
 const Color lightGrey = Color(0xFFF0F0F0);
 // ---------------------------------------------------
 
-// Placeholder untuk ModeSwitcher jika Anda belum membuatnya
+// Enum untuk mengidentifikasi pilihan menu profil
+enum ProfileMenu { profile, logout }
+
+// Placeholder untuk ModeSwitcher
 class ModeSwitcher extends StatelessWidget {
   const ModeSwitcher({super.key});
   @override
@@ -21,7 +22,8 @@ class ModeSwitcher extends StatelessWidget {
       ),
       child: const Text(
         'Pelanggan',
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+        style: TextStyle(
+            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
       ),
     );
   }
@@ -31,18 +33,82 @@ class ModeSwitcher extends StatelessWidget {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  // --- WIDGET MENU PROFIL (Fungsi Baru) ---
+  Widget _buildProfileMenuButton(BuildContext context) {
+    return PopupMenuButton<ProfileMenu>(
+      // Kontrol tampilan tombol, menggunakan CircleAvatar
+      child: const Padding(
+        padding: EdgeInsets.only(right: 8.0),
+        child: CircleAvatar(
+          radius: 18,
+          backgroundColor: darkGrey,
+          // Placeholder Network Image
+          backgroundImage: NetworkImage(
+            'https://i.pravatar.cc/150?img=3',
+          ), 
+          child: Text(
+            'R',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ), 
+        ),
+      ),
+      
+      // Aksi ketika item dipilih
+      onSelected: (ProfileMenu result) {
+        switch (result) {
+          case ProfileMenu.profile:
+            // Aksi: Navigasi ke Halaman Profil
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Navigasi ke Halaman Profil')),
+            );
+            break;
+          case ProfileMenu.logout:
+            // Aksi: Proses Logout
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Melakukan Logout...')),
+            );
+            break;
+        }
+      },
+
+      // Item-item yang muncul di menu pop-up
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<ProfileMenu>>[
+        const PopupMenuItem<ProfileMenu>(
+          value: ProfileMenu.profile,
+          child: Row(
+            children: [
+              Icon(Icons.person_outline, color: gojekGreen),
+              SizedBox(width: 8),
+              Text('Profil Saya'),
+            ],
+          ),
+        ),
+        const PopupMenuItem<ProfileMenu>(
+          value: ProfileMenu.logout,
+          child: Row(
+            children: [
+              Icon(Icons.logout, color: Colors.red),
+              SizedBox(width: 8),
+              Text('Logout'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // --- APP BAR ---
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0, // Garis bawah dihilangkan (gaya minimalis)
-        automaticallyImplyLeading: false, // Hilangkan tombol back default
+        elevation: 0,
+        automaticallyImplyLeading: false,
 
-        // Title: Sapaan (Leading dihilangkan)
+        // Title: Sapaan
         title: const Text(
-          'Halo, Rian!', // Ganti dengan data user
+          'Halo, Rian!',
           style: TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
@@ -50,7 +116,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
 
-        // Actions: Toggle Mode & Notifikasi
+        // Actions: Toggle Mode, Notifikasi, dan Profil
         actions: [
           const ModeSwitcher(), // Widget Mode Mitra/Pelanggan
           const SizedBox(width: 8),
@@ -60,23 +126,22 @@ class HomePage extends StatelessWidget {
               // Navigasi ke Halaman Notifikasi
             },
           ),
-          const SizedBox(width: 8),
+          _buildProfileMenuButton(context), // WIDGET PROFIL BARU
         ],
       ),
 
       // --- BODY UTAMA ---
       body: const HomeBody(),
 
-      // --- BOTTOM NAVIGATION BAR (Wajib untuk Navigasi Cepat) ---
-      // Anda perlu membuat implementasi BottomNavigationBar yang sebenarnya
+      // --- BOTTOM NAVIGATION BAR ---
       bottomNavigationBar: _buildBottomNavBar(),
     );
   }
-  
+
   // Placeholder Bottom Navigation Bar
   Widget _buildBottomNavBar() {
     return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed, // Pastikan ikon tidak bergeser
+      type: BottomNavigationBarType.fixed,
       selectedItemColor: gojekGreen,
       unselectedItemColor: darkGrey,
       items: const [
@@ -89,11 +154,12 @@ class HomePage extends StatelessWidget {
   }
 }
 
+// ------------------------------------------------------------------
 // --- WIDGET BODY ---
+// ------------------------------------------------------------------
 
 class HomeBody extends StatelessWidget {
   const HomeBody({super.key});
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -190,12 +256,15 @@ class HomeBody extends StatelessWidget {
               children: [
                 Icon(Icons.lock_open_outlined, color: Colors.black87, size: 28),
                 SizedBox(width: 10),
-                Text(
-                  'Unit Loker A1 di Gudang Sawah Besar',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Text(
+                    'Unit Loker A1 di Gudang Sawah Besar',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -206,16 +275,16 @@ class HomeBody extends StatelessWidget {
               style: TextStyle(color: darkGrey, fontSize: 14),
             ),
             const SizedBox(height: 15),
-            
+
             // Tombol Rute Cepat
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  // Aksi: MEMANGGIL FUNGSI NAVIGASI KE MAPS (Misal: menggunakan url_launcher)
-                  // openMapsNavigation('Alamat Lengkap Gudang Mitra');
+                  // Aksi: MEMANGGIL FUNGSI NAVIGASI KE MAPS
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Membuka Rute di Google Maps...')),
+                    const SnackBar(
+                        content: Text('Membuka Rute di Google Maps...')),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -257,8 +326,9 @@ class HomeBody extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildServiceIcon(Icons.add_business_outlined, 'Sewa Unit Baru'),
-            _buildServiceIcon(Icons.map_outlined, 'Cek Peta Gudang'), // Peta Penting!
-            _buildServiceIcon(Icons.access_time_outlined, 'Perpanjang Sewa'),
+            _buildServiceIcon(Icons.map_outlined, 'Cek Peta Gudang'),
+            _buildServiceIcon(
+                Icons.access_time_outlined, 'Perpanjang Sewa'),
             _buildServiceIcon(Icons.history_toggle_off, 'Riwayat Sewa'),
           ],
         ),
@@ -298,7 +368,6 @@ class HomeBody extends StatelessWidget {
       height: 100,
       width: double.infinity,
       decoration: BoxDecoration(
-        // ignore: deprecated_member_use
         color: gojekGreen.withOpacity(0.1),
         borderRadius: BorderRadius.circular(15),
       ),
