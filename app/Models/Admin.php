@@ -12,11 +12,11 @@ class Admin extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'admin';
-
+    public $timestamps = false;
     protected $fillable = [
-        'nama',
         'id_email'
     ];
+     protected $primaryKey = 'id_mitra';
     public function email(){
         return $this->belongsTo(Email::class,'id_email');
     }

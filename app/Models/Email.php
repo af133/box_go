@@ -10,6 +10,8 @@ class Email extends Model
     protected $fillable=[
         'email','password'
     ];
+    protected $primaryKey='id_email';
+    public $timestamps = false;
     protected $hidden=[
         'password'
     ];

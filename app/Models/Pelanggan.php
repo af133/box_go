@@ -13,14 +13,15 @@ class Pelanggan extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'pelanggan';
-
+    public $timestamps = false;
     protected $fillable = [
         'nama',
         'id_email',
         'nomor_hp',
+        'alamat',
         'path_profil',
     ];
-
+     protected $primaryKey = 'id_pelanggan';
     public function email(){
         return $this->belongsTo(Email::class,'id_email');
     }

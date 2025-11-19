@@ -12,9 +12,9 @@ return new class extends Migration
             $table->id('id_pelanggan');
             $table->foreignId('id_email')->constrained('email','id_email')->onDelete('cascade');
             $table->string('nama');
-            $table->string('path_profil');
+            $table->string('path_profil')->nullable();
             $table->text('alamat')->nullable();
-            $table->string('nomor_hp', 20);
+            $table->string('nomor_hp', 20)->nullable();
             $table->timestamps();
         });
 

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('id_lokasi')->constrained('lokasi','id_lokasi')->onDelete('cascade');
             $table->date('tanggal_pengambilan');
             $table->enum('status', ['pending','diterima', 'tidak'])->default('pending');
-            $table->timestamps();
         });
 
     }

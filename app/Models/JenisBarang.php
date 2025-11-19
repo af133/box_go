@@ -14,5 +14,8 @@ class JenisBarang extends Model
     public function order(){
         return $this->hasMany(Order::class,'id_jenis_barang');
     }
+    public function harga_mitra(){
+        return $this->hasMany(HargaMitra::class,'id_jenis_barang');
+    }
 
 }

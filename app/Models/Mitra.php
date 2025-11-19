@@ -12,13 +12,17 @@ class Mitra extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'mitra';
-
+    public $timestamps = false;
     protected $fillable = [
         'nama',
         'id_email',
         'nomor_hp',
         'path_profil',
+        'alamat',
+        'latitude',
+        'longitude'
     ];
+     protected $primaryKey = 'id_mitra';
 
     public function email(){
         return $this->belongsTo(Email::class,'id_email');
@@ -35,4 +39,7 @@ class Mitra extends Authenticatable
     {
         return $this->hasMany(Chat::class, 'id_mitra');
     }
+    // Relasi ke HargaMitra
+    public function harga_mitra(){
+        return $this->hasMany(HargaMitra::class,'id_mitra');}
 }

@@ -13,8 +13,8 @@ return new class extends Migration
             $table->foreignId('id_order')->constrained('order','id_order')->onDelete('cascade');
             $table->foreignId('id_mitra')->constrained('mitra','id_mitra')->onDelete('cascade');
             $table->string('path_pembayaran')->nullable();
-            $table->enum('status', ['pending', 'terkonfirmasi'])->default('pending');
-            $table->timestamps();
+            $table->enum('status', ['pending', 'terkonfirmasi','telah diambil'])->default('pending');
+            
         });
 
     }

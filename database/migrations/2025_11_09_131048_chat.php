@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('id_mitra')->nullable()->constrained('mitra','id_mitra')->onDelete('cascade');
             $table->foreignId('id_pelanggan')->nullable()->constrained('pelanggan','id_pelanggan')->onDelete('cascade');
             $table->text('pesan');
-            $table->timestamps();
+            
         });
 
     }
