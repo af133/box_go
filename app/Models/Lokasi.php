@@ -16,7 +16,7 @@ class Lokasi extends Model
         'nama_lokasi',
         'alamat',
         'path_area',
-        'polygon'
+        'deskripsi'
       
     ];
 

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('id_mitra')->constrained('mitra','id_mitra')->onDelete('cascade');
             $table->string('nama_lokasi')->nullable();
             $table->string('path_area')->nullable();
-            $table->longText('polygon')->nullable(); 
+            $table->string('deskripsi')->nullable();
         });
     }
 

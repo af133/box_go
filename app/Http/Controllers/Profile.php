@@ -65,7 +65,7 @@ class Profile extends Controller
 
                 ]);
             return response()->json([
-                'role'=>'pelanggan',
+                'role'=>$request->role,
                 'user'=>$pelanggan
             ]);
 
