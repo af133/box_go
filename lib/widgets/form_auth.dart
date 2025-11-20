@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:box_go/shared/constants.dart';
 
 // Definisi warna GoBox-Style untuk konsistensi
 // ignore: constant_identifier_names
-const Color GoBoxGreen = Color(0xFF00AA13);
 const Color lightGrey = Color(0xFFF0F0F0);
 const Color darkGrey = Color(0xFF616161);
 
@@ -41,7 +41,7 @@ class GoBoxTextField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: labelText,
         hintText: hintText,
-        prefixIcon: Icon(prefixIcon, color: GoBoxGreen),
+        prefixIcon: Icon(prefixIcon, color: goBox),
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
@@ -59,7 +59,7 @@ class GoBoxTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: GoBoxGreen, width: 2),
+          borderSide: const BorderSide(color: goBox, width: 2),
         ),
         labelStyle: const TextStyle(color: darkGrey),
         hintStyle: TextStyle(color: darkGrey.withOpacity(0.6)),
@@ -85,7 +85,7 @@ class GoBoxElevatedButton extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: GoBoxGreen,
+          backgroundColor: goBox,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -125,7 +125,7 @@ class GoBoxTextLink extends StatelessWidget {
         child: Text(
           text,
           style: const TextStyle(
-            color: GoBoxGreen,
+            color: goBox,
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),

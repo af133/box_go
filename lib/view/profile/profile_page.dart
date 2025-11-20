@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
-
+import 'package:box_go/shared/constants.dart';
 // --- DEFINISI WARNA (Digunakan dari kode sebelumnya) ---
-const Color gojekGreen = Color(0xFF00AA13);
 const Color darkGrey = Color(0xFF616161);
 const Color lightGrey = Color(0xFFF0F0F0);
 // ---------------------------------------------------
@@ -143,7 +142,7 @@ class _ProfilePageState extends State<ProfilePage> {
         keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: icon != null ? Icon(icon, color: gojekGreen) : null,
+          prefixIcon: icon != null ? Icon(icon, color: goBox) : null,
           border: const OutlineInputBorder(),
           // Visual khusus jika read-only
           fillColor: readOnly ? lightGrey : Colors.white,
@@ -162,7 +161,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Profil' : 'Profil Saya'),
-        backgroundColor: gojekGreen,
+        backgroundColor: goBox,
         foregroundColor: Colors.white,
         actions: [
           if (_isEditing)
@@ -202,7 +201,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     right: 0,
                     child: CircleAvatar(
                       radius: 18,
-                      backgroundColor: gojekGreen,
+                      backgroundColor: goBox,
                       child: IconButton(
                         icon: const Icon(Icons.camera_alt,
                             size: 18, color: Colors.white),

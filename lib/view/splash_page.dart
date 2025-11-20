@@ -1,6 +1,7 @@
 import 'dart:async';
 import "package:flutter/material.dart";
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:box_go/shared/constants.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -11,7 +12,6 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
-  static const Color go = Color(0xFF00AA13);
   static const Color darkGrey = Color(0xFF616161);
 
   late AnimationController _controller;
@@ -27,13 +27,15 @@ class _SplashPageState extends State<SplashPage>
       vsync: this,
     );
 
-    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _opacityAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
 
@@ -90,9 +92,9 @@ class _SplashPageState extends State<SplashPage>
                         'Penyimpanan Barang Aman & Murah',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: go,
+                          color: goBox,
                         ),
                       ),
                     ],
@@ -117,11 +119,11 @@ class _SplashPageState extends State<SplashPage>
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'go',
+                    'GoBox',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: go,
+                      color: goBox,
                     ),
                   ),
                 ],
