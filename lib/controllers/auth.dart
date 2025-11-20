@@ -9,7 +9,7 @@ class AuthController {
   factory AuthController() => _instance;
   AuthController._internal();
 
-  final String baseUrl = 'http://127.0.0.1:8000/api';
+  final String baseUrl = 'http://backend_go_box.test/api';
   String? token;
 
   // =================== SIGN UP ===================

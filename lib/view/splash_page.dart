@@ -11,7 +11,7 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage>
     with SingleTickerProviderStateMixin {
-  static const Color gojekGreen = Color(0xFF00AA13);
+  static const Color go = Color(0xFF00AA13);
   static const Color darkGrey = Color(0xFF616161);
 
   late AnimationController _controller;
@@ -92,7 +92,7 @@ class _SplashPageState extends State<SplashPage>
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: gojekGreen,
+                          color: go,
                         ),
                       ),
                     ],
@@ -102,7 +102,7 @@ class _SplashPageState extends State<SplashPage>
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(bottom: screenHeight * 0.05, top: 20),
+            padding: EdgeInsets.only(bottom: screenHeight * 0.05, top: 15),
             child: FadeTransition(
               opacity: _opacityAnimation,
               child: Column(
@@ -117,11 +117,11 @@ class _SplashPageState extends State<SplashPage>
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'GoBox',
+                    'go',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: gojekGreen,
+                      color: go,
                     ),
                   ),
                 ],

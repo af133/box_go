@@ -2,6 +2,7 @@ class User {
   final int idUser;
   final String nama;
   final String? email;
+  final String? pathProfil;
   final String? alamat;
   final String? nomorHp;
   final double? latitude;
@@ -11,6 +12,7 @@ class User {
     required this.idUser,
     required this.nama,
     this.email,
+    this.pathProfil,
     this.alamat,
     this.nomorHp,
     this.latitude,
@@ -23,6 +25,7 @@ class User {
         email: json['email']?.toString(),
         alamat: json['alamat']?.toString(),
         nomorHp: json['nomor_hp']?.toString(),
+        pathProfil: json['path_profil']?.toString(),
         latitude: json['latitude'] != null
             ? (json['latitude'] as num).toDouble()
             : null,
@@ -36,6 +39,7 @@ class User {
         'nama': nama,
         'email': email,
         'alamat': alamat,
+        'pathProfil': pathProfil,
         'nomor_hp': nomorHp,
         'latitude': latitude,
         'longitude': longitude,

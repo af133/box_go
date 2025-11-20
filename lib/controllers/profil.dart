@@ -4,20 +4,15 @@ import 'package:http/http.dart' as http;
 // import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthController {
+class ProfilController {
   final String baseUrl = "http://backend_go_box.test/api";
-
-  // -----------------------------------------------------------
-  // UPDATE PROFIL (nama, alamat, hp, password opsional, foto opsional)
-  // -----------------------------------------------------------
   Future<String> updateProfile({
     required String nama,
     String? alamat,
     String? nomorHp,
-    String? password,   
-    File? imageFile,    
+    String? password,
+    File? imageFile,
   }) async {
-
     try {
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
@@ -30,11 +25,10 @@ class AuthController {
       request.headers['Authorization'] = "Bearer $token";
 
       request.fields['nama'] = nama;
-      if(alamat!=null){
-          request.fields['alamat'] = alamat;
-
+      if (alamat != null) {
+        request.fields['alamat'] = alamat;
       }
-      if(nomorHp != null){
+      if (nomorHp != null) {
         request.fields['nomor_hp'] = nomorHp;
       }
 
@@ -44,10 +38,7 @@ class AuthController {
 
       if (imageFile != null) {
         request.files.add(
-          await http.MultipartFile.fromPath(
-            'path_profil',
-            imageFile.path,
-          ),
+          await http.MultipartFile.fromPath('path_profil', imageFile.path),
         );
       }
 
@@ -60,21 +51,8 @@ class AuthController {
         return "Profil berhasil diperbarui";
       }
       return data['message'] ?? "Gagal update";
-
     } catch (e) {
       return "Error: $e";
     }
-  }
-
-  // -----------------------------------------------------------
-  // GET PROFILE dari SharedPreferences untuk halaman Profile
-  // -----------------------------------------------------------
-  Future<Map<String, dynamic>?> getProfile() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? userString = prefs.getString("user");
-
-    if (userString == null) return null;
-
-    return jsonDecode(userString);
   }
 }
