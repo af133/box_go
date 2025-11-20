@@ -1,4 +1,5 @@
 import 'jenisbarang.dart';
+
 class HargaMitra {
   final int idHargaMitra;
   final int hargaSewa;
