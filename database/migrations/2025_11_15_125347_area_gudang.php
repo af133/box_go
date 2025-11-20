@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('polygon', function (Blueprint $table) {
-            $table->id('id_polygon');
-            $table->longText('polygon'); // GeoJSON
+        Schema::create('area_gudang', function (Blueprint $table) {
+            $table->id('id_area');
+             $table->foreignId('id_polygon')->constrained('polygon','id_polygon')->onDelete('cascade');
+             $table->foreignId('id_lokasi')->constrained('lokasi','id_lokasi')->onDelete('cascade');
         });
 
     }

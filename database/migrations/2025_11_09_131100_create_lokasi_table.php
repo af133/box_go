@@ -8,13 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('lokasi', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_mitra')->constrained('mitra')->onDelete('cascade');
-            $table->string('nama_tempat');
-            $table->text('alamat');
-            $table->geometry('area'); // Polygon
-            $table->timestamps();
+       Schema::create('lokasi', function (Blueprint $table) {
+            $table->id('id_lokasi');
+            $table->foreignId('id_mitra')->constrained('mitra','id_mitra')->onDelete('cascade');
+            $table->string('nama_lokasi')->nullable();
+            $table->string('path_area')->nullable();
+            $table->string('deskripsi')->nullable();
         });
     }
 

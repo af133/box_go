@@ -9,14 +9,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('mitra', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_mitra');
+            $table->foreignId('id_email')->constrained('email','id_email')->onDelete('cascade');
             $table->string('nama');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->string('nomor_hp')->unique()->nullable();
             $table->string('path_profil')->nullable();
+            $table->text('alamat');
+            $table->string('nomor_hp', 20)->nullable();
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->timestamps();
         });
+
     }
 
     public function down(): void

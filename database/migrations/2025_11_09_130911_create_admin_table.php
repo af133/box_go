@@ -9,12 +9,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('admin', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama');
-            $table->string('email')->unique();
-            $table->string('password');
+            $table->id('id_admin');
+            $table->foreignId('id_email')->constrained('email','id_email')->onDelete('cascade');
             $table->timestamps();
         });
+
     }
 
     public function down(): void

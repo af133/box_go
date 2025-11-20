@@ -9,12 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('chat', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_pelanggan')->nullable()->constrained('pelanggan')->onDelete('cascade');
-            $table->foreignId('id_mitra')->nullable()->constrained('mitra')->onDelete('cascade');
-            $table->text('pesan')->nullable();
-            $table->timestamps();
+            $table->id('id_chat');
+            $table->foreignId('id_mitra')->nullable()->constrained('mitra','id_mitra')->onDelete('cascade');
+            $table->foreignId('id_pelanggan')->nullable()->constrained('pelanggan','id_pelanggan')->onDelete('cascade');
+            $table->text('pesan');
+            
         });
+
     }
 
     public function down(): void

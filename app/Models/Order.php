@@ -10,17 +10,21 @@ class Order extends Model
     use HasFactory;
 
     protected $table = 'order';
-    protected $primaryKey = 'id_order';
-    protected $keyType = 'int';
-
     protected $fillable = [
-        'id_mitra',
-        'status_pemesanan',
+        'id_pelanggan',
+        'path_gambar',
+        'id_jenis_barang',
+        'tanggal_penitipan',
+        'tanggal_pengembalian',
+        'status'=>'pending'
     ];
 
-    public function mitra()
+    public function jenis_barang(){
+        return $this->belongsTo(JenisBarang::class,'id_jenis_barang');
+    }
+    public function pelanggan()
     {
-        return $this->belongsTo(Mitra::class, 'id_mitra');
+        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
     }
 
     public function lokasi()

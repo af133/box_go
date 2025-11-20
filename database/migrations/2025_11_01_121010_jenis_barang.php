@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('polygon', function (Blueprint $table) {
-            $table->id('id_polygon');
-            $table->longText('polygon'); // GeoJSON
+        Schema::create('jenis_barang', function (Blueprint $table) {
+            $table->id('id_jenis_barang');
+            $table->string('jenis_barang')->nullable();
         });
 
     }
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('jenis_barang');
     }
 };

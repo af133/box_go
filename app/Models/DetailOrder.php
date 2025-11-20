@@ -15,8 +15,10 @@ class DetailOrder extends Model
 
     protected $fillable = [
         'id_order',
-        'pickupd_date',
-        'return_date',
+        'id_mitra',
+        'path_pembayaran',
+        'status'
+
     ];
 
     public function lokasi()

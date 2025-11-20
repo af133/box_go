@@ -9,12 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('detail_order', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_order')->constrained('order')->onDelete('cascade');
-            $table->date('pickupd_date')->nullable();
-            $table->date('return_date')->nullable();
-            $table->timestamps();
+            $table->id('id_detail');
+            $table->foreignId('id_order')->constrained('order','id_order')->onDelete('cascade');
+            $table->foreignId('id_mitra')->constrained('mitra','id_mitra')->onDelete('cascade');
+            $table->string('path_pembayaran')->nullable();
+            $table->enum('status', ['pending', 'terkonfirmasi','telah diambil','dititipkan'])->default('pending');
+
         });
+
     }
 
     public function down(): void
