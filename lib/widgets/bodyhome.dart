@@ -358,21 +358,3 @@ class Bodyhome extends StatelessWidget {
     );
   }
 }
-
-// Widget utama untuk menjalankan aplikasi (hanya contoh)
-// void main() {
-//   runApp(const MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const MaterialApp(
-//       title: 'Home Screen Demo',
-//       debugShowCheckedModeBanner: false,
-//       home: Bodyhome(),
-//     );
-//   }
-// }
