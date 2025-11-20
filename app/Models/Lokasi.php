@@ -10,14 +10,14 @@ class Lokasi extends Model
     use HasFactory;
 
     protected $table = 'lokasi';
-   
+
     protected $fillable = [
         'id_mitra',
         'nama_lokasi',
         'alamat',
         'path_area',
         'deskripsi'
-      
+
     ];
 
     public function mitra()
@@ -25,10 +25,9 @@ class Lokasi extends Model
         return $this->belongsTo(Mitra::class, 'id_mitra');
     }
 
-
-    public function detailOrders()
+    public function order()
     {
-        return $this->hasMany(DetailOrder::class, 'id_area');
+        return $this->hasMany(DetailOrder::class, 'id_lokasi');
     }
     public function area_gudang()
     {

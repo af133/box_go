@@ -21,7 +21,7 @@ class Mitra extends Authenticatable
         'alamat',
         'latitude',
         'longitude'
-        
+
     ];
      protected $primaryKey = 'id_mitra';
 
@@ -29,14 +29,13 @@ class Mitra extends Authenticatable
         return $this->belongsTo(Email::class,'id_email');
     }
     // Relasi ke Lokasi
-    public function lokasis()
+    public function lokasi()
     {
         return $this->hasMany(Lokasi::class, 'id_mitra');
     }
 
-
     // Relasi ke Chat
-    public function chats()
+    public function chat()
     {
         return $this->hasMany(Chat::class, 'id_mitra');
     }

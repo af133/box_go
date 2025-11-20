@@ -26,7 +26,7 @@ class Pelanggan extends Authenticatable
         return $this->belongsTo(Email::class,'id_email');
     }
     // Relasi ke Chat
-    public function chats()
+    public function chat()
     {
         return $this->hasMany(Chat::class, 'id_pelanggan');
     }

@@ -10,18 +10,16 @@ class DetailOrder extends Model
     use HasFactory;
 
     protected $table = 'detail_order';
+    protected $primaryKey = 'id_detail_order';
+    protected $keyType = 'int';
 
     protected $fillable = [
         'id_order',
         'id_mitra',
         'path_pembayaran',
         'status'
-    ];
 
-    public function order()
-    {
-        return $this->belongsTo(Order::class, 'id_order');
-    }
+    ];
 
     public function lokasi()
     {

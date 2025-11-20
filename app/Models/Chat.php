@@ -10,6 +10,8 @@ class Chat extends Model
     use HasFactory;
 
     protected $table = 'chat';
+    protected $primaryKey = 'id_chat';
+    protected $keyType = 'int';
 
     protected $fillable = [
         'id_pelanggan',
