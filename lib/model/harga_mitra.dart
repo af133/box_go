@@ -1,18 +1,18 @@
-import 'jenisbarang.dart';
+import 'jenis_barang.dart';
 
-class HargaMitra {
+class Hargamitra {
   final int idHargaMitra;
   final int hargaSewa;
   final JenisBarang? jenisBarang;
 
-  HargaMitra({
+  Hargamitra({
     required this.idHargaMitra,
     required this.hargaSewa,
     this.jenisBarang,
   });
 
-  factory HargaMitra.fromJson(Map<String, dynamic> json) {
-    return HargaMitra(
+  factory Hargamitra.fromJson(Map<String, dynamic> json) {
+    return Hargamitra(
       idHargaMitra: json['harga_mitra'],
       hargaSewa: json['harga_sewa'],
       jenisBarang: json['jenis_barang'] != null 

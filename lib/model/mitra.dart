@@ -1,9 +1,9 @@
-import 'hargaMitra.dart';
+import 'harga_mitra.dart';
 class Mitra {
   final int idMitra;
   final String nama;
   final String alamat;
-  final List<HargaMitra> hargaMitra;
+  final List<Hargamitra> hargaMitra;
 
   Mitra({
     required this.idMitra,
@@ -18,7 +18,7 @@ class Mitra {
       nama: json['nama'] ?? "",
       alamat: json['alamat'] ?? "",
       hargaMitra: (json['harga_mitra'] as List<dynamic>? ?? [])
-          .map((e) => HargaMitra.fromJson(e))
+          .map((e) => Hargamitra.fromJson(e))
           .toList(),
     );
   }
