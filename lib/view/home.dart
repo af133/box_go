@@ -1,12 +1,17 @@
-import 'package:box_go/model/user.dart';
-import 'package:box_go/widgets/appbar_home.dart';
+// lib/view/home_page.dart
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:box_go/controllers/auth.dart';
 import 'package:box_go/controllers/lokasimitra.dart';
+import 'package:box_go/model/user.dart';
+import 'package:box_go/widgets/appbar_home.dart';
 import 'package:box_go/widgets/bnavabar.dart';
 import 'package:box_go/view/profile/profile_page.dart';
 import 'package:box_go/view/splash_page.dart';
 import 'package:box_go/widgets/bodyhome.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -15,13 +20,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _StateHomePage extends State<HomePage> {
-  final _auth = AuthController();
-  final _penitipan = LokasiMitra();
+  final AuthController _auth = AuthController();
+  final LokasiMitra _lokasiMitra = LokasiMitra();
 
   int currentIndex = 0;
-
   User? user;
-  List<dynamic> lokasiData = [];
+  Map<String, dynamic> lokasiData = {}; 
 
   @override
   void initState() {
@@ -36,16 +40,28 @@ class _StateHomePage extends State<HomePage> {
   }
 
   Future<void> loadPenitipan() async {
-    final data = await _penitipan.getBarang();
-    setState(() {
-      lokasiData = data; // simpan data API
-    });
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      final data = await _lokasiMitra.getDashboardLokasi(
+          latitude: position.latitude, longitude: position.longitude);
+      setState(() {
+        lokasiData = data;
+      });
+    } catch (e) {
+      
+      print("Gagal memuat data lokasi: $e");
+    }
   }
 
   Widget changPage(int index) {
     switch (index) {
       case 0:
-        return Bodyhome(); 
+        return Bodyhome(
+          penitipanTerdekat: lokasiData['penitipan_terdekat'] ?? [],
+          ratingTertinggi: lokasiData['rating_tertinggi'] ?? [],
+        );
       case 1:
         return ProfilePage();
       default:

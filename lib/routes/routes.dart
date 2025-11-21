@@ -11,6 +11,7 @@ class AppRoutes {
   static const login = '/login';
   static const signup = '/signup';
   static const profil = '/profile';
+  static const all_mitra = '/all_mitra';
 
   static Map<String, WidgetBuilder> routes = {
     splash: (_) => SplashPage(),
