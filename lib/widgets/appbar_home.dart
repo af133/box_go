@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../controllers/auth.dart';
+import '../../controllers/auth.dart'; // Asumsi path controller ini benar
 
 class AppbarHome extends StatelessWidget implements PreferredSizeWidget {
   final String name;
@@ -17,6 +17,7 @@ class AppbarHome extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       title: Row(
         children: [
+          // Popup Menu (Foto Profil)
           PopupMenuButton<int>(
             offset: const Offset(0, 50),
             shape: RoundedRectangleBorder(
@@ -24,7 +25,7 @@ class AppbarHome extends StatelessWidget implements PreferredSizeWidget {
             ),
             icon: CircleAvatar(
               radius: 22,
-              backgroundImage: NetworkImage(pathProfil!)
+              backgroundImage: NetworkImage(pathProfil ?? 'https://via.placeholder.com/150'), // Tambahkan fallback
             ),
             onSelected: (value) async {
               if (value == 1) {
@@ -33,7 +34,7 @@ class AppbarHome extends StatelessWidget implements PreferredSizeWidget {
               if (value == 2) {
                 await _auth.logout();
                 // ignore: use_build_context_synchronously
-                Navigator.pushNamed(context, "/login");
+                Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false); // Ubah agar tidak bisa kembali
               }
             },
             itemBuilder: (context) => [
@@ -62,11 +63,12 @@ class AppbarHome extends StatelessWidget implements PreferredSizeWidget {
 
           const SizedBox(width: 12),
 
+          // Teks Sapaan
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Selamat dantang...",
+                "Selamat datang...",
                 style: TextStyle(fontSize: 14, color: Colors.black54),
               ),
               Text(
@@ -76,23 +78,16 @@ class AppbarHome extends StatelessWidget implements PreferredSizeWidget {
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
         ],
       ),
-      actions: [
-        IconButton(
-          onPressed: () {
-            Navigator.pushNamed(context, '/notifikasi');
-          },
-          icon: const Icon(Icons.notifications),
-        ),
-      ],
-      
+      actions: const [],
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(70);
+  Size get preferredSize => const Size.fromHeight(60); // Lebih ringkas
 }

@@ -1,7 +1,12 @@
-// lib/widgets/bodyhome.dart
-import 'package:flutter/material.dart';
+// ignore_for_file: invalid_use_of_protected_member
 
-// --- Widget Card Horizontal ---
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+
+import 'package:box_go/shared/constants.dart';
+
 class BoardingCard extends StatelessWidget {
   final Map<String, dynamic> data;
   final VoidCallback? onTap;
@@ -11,7 +16,7 @@ class BoardingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap ?? () => print('Card ${data['title']} diklik'),
+      onTap: onTap,
       child: SizedBox(
         width: 160,
         child: Card(
@@ -23,15 +28,15 @@ class BoardingCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                 child: Image.network(
-                  data['path_area'] ??  'https://via.placeholder.com/160x80?text=No+Image',
+                  data['path_area'] ?? 'https://via.placeholder.com/160x80?text=No+Image',
                   height: 80,
                   width: 160,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) => Container(
                     height: 80,
                     width: 160,
-                    color: Colors.grey.shade300,
-                    child: const Center(child: Icon(Icons.photo, color: Colors.grey)),
+                    color: Colors.grey.shade200,
+                    child: const Center(child: Icon(Icons.image_not_supported, color: darkGrey)),
                   ),
                 ),
               ),
@@ -40,18 +45,14 @@ class BoardingCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      data['title'] ?? 'Tidak ada nama',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
+                    Text(data['title'] ?? 'Mitra',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1),
                     const SizedBox(height: 4),
-                    Text(
-                      data['duration'] ?? '',
-                      style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    Text(data['duration'] ?? '',
+                        style: const TextStyle(fontSize: 11, color: darkGrey),
+                        overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
@@ -63,7 +64,6 @@ class BoardingCard extends StatelessWidget {
   }
 }
 
-// --- Horizontal Section Widget ---
 class HorizontalSection extends StatelessWidget {
   final String title;
   final List<Map<String, dynamic>> dataList;
@@ -72,37 +72,6 @@ class HorizontalSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (dataList.isEmpty) {
-      return Container(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.yellow.shade50,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.yellow.shade200),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline, color: Colors.orange.shade700),
-                  const SizedBox(width: 10),
-                  const Expanded(child: Text('Belum ada data untuk section ini.')),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
     return Container(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -113,90 +82,174 @@ class HorizontalSection extends StatelessWidget {
             children: <Widget>[
               Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               TextButton(
-                onPressed: () => {
-                  Navigator.pushReplacementNamed(context, '/all_mitra')
+                child: const Text("Lihat Semua >", style: TextStyle(color: goBox, fontWeight: FontWeight.bold)),
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/all_mitra',
+                    arguments: {"title": title, "dataList": dataList},
+                  );
                 },
-                child: const Text(
-                  'show more >',
-                  style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-                ),
-              ),
+              )
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           SizedBox(
             height: 160,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: dataList.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.only(right: 10, left: index == 0 ? 0 : 0),
-                  child: BoardingCard(
-                    data: dataList[index],
-                    onTap: () {
-                      print('Klik ${dataList[index]['title']}');
-                    },
-                  ),
-                );
-              },
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: BoardingCard(data: dataList[index]),
+              ),
             ),
-          ),
+          )
         ],
       ),
     );
   }
 }
 
-// --- Quick Feature Button ---
 class QuickFeatureButton extends StatelessWidget {
   final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 
-  const QuickFeatureButton({super.key, required this.icon, required this.label});
+  const QuickFeatureButton({super.key, required this.icon, required this.label, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        print('Fitur $label diklik');
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                  border: Border.all(color: lightGrey)),
+              child: Icon(icon, color: goBox, size: 28),
             ),
-            child: Icon(icon, color: Colors.blue.shade700, size: 28),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LocationHeader extends StatefulWidget {
+  final Function(double lat, double lng)? onLocationChanged;
+
+  const LocationHeader({super.key, this.onLocationChanged});
+
+  @override
+  State<LocationHeader> createState() => _LocationHeaderState();
+}
+
+class _LocationHeaderState extends State<LocationHeader> {
+  String _location = "Setel Lokasi Anda";
+  bool _loading = false;
+
+  Future<void> _setLocation() async {
+    try {
+      setState(() => _loading = true);
+
+      Position pos = await Geolocator.getCurrentPosition();
+      List<Placemark> places = await placemarkFromCoordinates(pos.latitude, pos.longitude);
+
+      String city = places.first.subAdministrativeArea ?? "Lokasi";
+
+      setState(() => _location = city);
+
+      widget.onLocationChanged?.call(pos.latitude, pos.longitude);
+
+    } catch (e) {
+      setState(() => _location = "Lokasi Tidak Aktif");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Gagal Mengambil Lokasi")),
+      );
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: goBox,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: _loading ? null : _setLocation,
+            child: Row(
+              children: [
+                const Icon(Icons.location_on, color: Colors.white, size: 16),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    _location,
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (_loading)
+                  const SizedBox(
+                      width: 14,
+                      height: 14,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ))
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-            textAlign: TextAlign.center,
-          ),
+          const SizedBox(height: 12),
+          TextField(
+            decoration: InputDecoration(
+              hintText: 'Cari lokasi penitipan...',
+              prefixIcon: Icon(Icons.search, color: darkGrey),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+            ),
+          )
         ],
       ),
     );
   }
 }
 
-// --- Bodyhome Utama ---
-// --- Bodyhome Utama ---
+// ===========================================
+// BODY HOME PAGE
+// ===========================================
+
 class Bodyhome extends StatelessWidget {
   final List<dynamic> penitipanTerdekat;
   final List<dynamic> ratingTertinggi;
 
-  const Bodyhome({
-    super.key,
-    required this.penitipanTerdekat,
-    required this.ratingTertinggi,
-  });
+  const Bodyhome({super.key, required this.penitipanTerdekat, required this.ratingTertinggi});
 
-  // Helper function konversi dynamic ke double aman
   double parseDouble(dynamic value) {
     if (value == null) return 0.0;
     if (value is double) return value;
@@ -206,71 +259,59 @@ class Bodyhome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> terdekat = penitipanTerdekat.map((e) => {
-      'title': e['nama_lokasi'] ?? 'Mitra',
-      'duration': 'Jarak: ${parseDouble(e['distance']).toStringAsFixed(2)} km',
-      'path_area': e['path_area'] ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHuipgoTjoZvHwH47qd8_n0Tg_El0rXGcywA&s',
-    }).toList();
+    final terdekat = penitipanTerdekat.map((e) => {
+          'title': e['nama_lokasi'],
+          'duration':
+              parseDouble(e['distance']) > 0 ? "Jarak: ${parseDouble(e['distance']).toStringAsFixed(1)} km" : "Jarak tidak tersedia",
+          'path_area': e['path_area']
+        }).toList();
 
-    final List<Map<String, dynamic>> rating = ratingTertinggi.map((e) => {
-      'title': e['nama_lokasi'] ?? 'Mitra',
-      'duration': 'Rating: ${parseDouble(e['rating_mitra_avg_rating']).toStringAsFixed(1)}',
-      'path_area': e['path_area'] ?? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHuipgoTjoZvHwH47qd8_n0Tg_El0rXGcywA&s',
-    }).toList();
+    final rating = ratingTertinggi.map((e) => {
+          'title': e['nama_lokasi'],
+          'duration': "Rating: ${parseDouble(e['rating_mitra_avg_rating']).toStringAsFixed(1)} ⭐",
+          'path_area': e['path_area']
+        }).toList();
 
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          LocationHeader(
+            onLocationChanged: (lat, lng) {
+              final homeState = context.findAncestorStateOfType<State>();
+              homeState?.setState(() {});
+            },
+          ),
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Search Bar
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Cari layanan, lokasi atau barang...',
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    QuickFeatureButton(icon: Icons.receipt_long, label: 'Riwayat'),
+                    QuickFeatureButton(icon: Icons.luggage, label: 'Titip Barang'),
+                    QuickFeatureButton(
+                      icon: Icons.support_agent,
+                      label: 'Bantuan',
+                      onTap: () async {
+                        final url = Uri.parse("https://wa.me/6285806138261?text=Halo%20Admin,%20saya%20butuh%20bantuan!");
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        }
+                      },
+                    )
+                  ],
                 ),
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-              ),
-            ),
-            const SizedBox(height: 24),
 
-            // Quick Actions
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                QuickFeatureButton(
-                  icon: Icons.receipt_long,
-                  label: 'History Pemesanan',
-                ),
-                QuickFeatureButton(
-                  icon: Icons.luggage,
-                  label: 'Penitipan Barang',
-                ),
-                QuickFeatureButton(
-                  icon: Icons.support_agent,
-                  label: 'Pusat Bantuan',
-                ),
+                const SizedBox(height: 28),
+
+                HorizontalSection(title: "Titipan Terdekat 📍", dataList: terdekat),
+                HorizontalSection(title: "Rating Tertinggi ⭐", dataList: rating),
               ],
             ),
-            const SizedBox(height: 30),
-
-            // Penitipan Terdekat
-            HorizontalSection(title: 'Penitipan Terdekat', dataList: terdekat),
-            const SizedBox(height: 20),
-
-            // Rating Tertinggi
-            HorizontalSection(title: 'Rating Tertinggi', dataList: rating),
-            const SizedBox(height: 30),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
