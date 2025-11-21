@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LokasiMitra {
-  final String baseUrl = 'http://backend_go_box.test/api';
+  final String baseUrl = 'http://192.168.10.16:8000/api';
 
   Future<Map<String, dynamic>> getDashboardLokasi({required double latitude, required double longitude}) async {
     final prefs = await SharedPreferences.getInstance();

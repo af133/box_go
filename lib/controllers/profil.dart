@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilController {
-  final String baseUrl = "http://backend_go_box.test/api";
+  final String baseUrl = "http://192.168.10.16:8000/api";
   Future<String> updateProfile({
     required String nama,
     String? alamat,
