@@ -155,7 +155,8 @@ class _AllMitraPageState extends State<AllMitraPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.storefront_off, size: 80, color: darkGrey.withOpacity(0.4)),
+                          // FIX: Mengganti Icons.storefront_off dengan Icons.store_mall_directory
+                          Icon(Icons.store_mall_directory, size: 80, color: darkGrey.withOpacity(0.4)),
                           const SizedBox(height: 16),
                           Text(
                             // Pesan yang lebih informatif
@@ -244,6 +245,7 @@ class MitraCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         elevation: 6, 
+        // ignore: deprecated_member_use
         shadowColor: goBox.withOpacity(0.3), // Bayangan warna goBox
         clipBehavior: Clip.antiAlias, 
         child: Column(
@@ -297,11 +299,13 @@ class MitraCard extends StatelessWidget {
                       const Spacer(),
                       
                       // Jarak dalam KM
+                      // ignore: deprecated_member_use
                       Icon(Icons.location_on, color: goBox.withOpacity(0.7), size: 14),
                       const SizedBox(width: 2),
                       Text(
                         '${distance.toStringAsFixed(1)} km',
                         style: TextStyle(
+                            // ignore: deprecated_member_use
                             fontSize: 12, color: darkGrey.withOpacity(0.8)),
                       ),
                     ],

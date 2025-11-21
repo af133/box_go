@@ -101,6 +101,7 @@ class _LoginViewState extends State<LoginView> {
                   await Future.delayed(const Duration(seconds: 1));
                   if (mounted) {
                     Navigator.pushReplacement(
+                      // ignore: use_build_context_synchronously
                       context,
                       MaterialPageRoute(builder: (context) => HomePage()),
                     );

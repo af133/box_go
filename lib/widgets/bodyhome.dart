@@ -1,3 +1,4 @@
+// lib/widgets/bodyhome.dart
 // ignore_for_file: invalid_use_of_protected_member
 
 import 'package:flutter/material.dart';
@@ -5,111 +6,13 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
+// Asumsi import ini valid di proyek Anda
 import 'package:box_go/shared/constants.dart';
+import 'package:box_go/widgets/horizontal_section.dart'; // Import widget yang dipisah
 
-class BoardingCard extends StatelessWidget {
-  final Map<String, dynamic> data;
-  final VoidCallback? onTap;
-
-  const BoardingCard({super.key, required this.data, this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: SizedBox(
-        width: 160,
-        child: Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                child: Image.network(
-                  data['path_area'] ?? 'https://via.placeholder.com/160x80?text=No+Image',
-                  height: 80,
-                  width: 160,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 80,
-                    width: 160,
-                    color: Colors.grey.shade200,
-                    child: const Center(child: Icon(Icons.image_not_supported, color: darkGrey)),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(data['title'] ?? 'Mitra',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1),
-                    const SizedBox(height: 4),
-                    Text(data['duration'] ?? '',
-                        style: const TextStyle(fontSize: 11, color: darkGrey),
-                        overflow: TextOverflow.ellipsis),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HorizontalSection extends StatelessWidget {
-  final String title;
-  final List<Map<String, dynamic>> dataList;
-
-  const HorizontalSection({super.key, required this.title, required this.dataList});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              TextButton(
-                child: const Text("Lihat Semua >", style: TextStyle(color: goBox, fontWeight: FontWeight.bold)),
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/all_mitra',
-                    arguments: {"title": title, "dataList": dataList},
-                  );
-                },
-              )
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 160,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: dataList.length,
-              itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: BoardingCard(data: dataList[index]),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-}
+// ===========================================
+// WIDGETS PENDUKUNG (QuickFeatureButton dan LocationHeader)
+// ===========================================
 
 class QuickFeatureButton extends StatelessWidget {
   final IconData icon;
@@ -157,9 +60,10 @@ class QuickFeatureButton extends StatelessWidget {
 }
 
 class LocationHeader extends StatefulWidget {
-  final Function(double lat, double lng)? onLocationChanged;
+  // onLocationChanged sekarang memicu load data di HomePage
+  final VoidCallback? onLocationReload;
 
-  const LocationHeader({super.key, this.onLocationChanged});
+  const LocationHeader({super.key, this.onLocationReload});
 
   @override
   State<LocationHeader> createState() => _LocationHeaderState();
@@ -170,25 +74,32 @@ class _LocationHeaderState extends State<LocationHeader> {
   bool _loading = false;
 
   Future<void> _setLocation() async {
+    if (!mounted) return;
     try {
       setState(() => _loading = true);
 
-      Position pos = await Geolocator.getCurrentPosition();
+      // Ambil posisi
+      Position pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       List<Placemark> places = await placemarkFromCoordinates(pos.latitude, pos.longitude);
 
       String city = places.first.subAdministrativeArea ?? "Lokasi";
 
-      setState(() => _location = city);
-
-      widget.onLocationChanged?.call(pos.latitude, pos.longitude);
-
+      if (mounted) {
+        setState(() => _location = city);
+        // Memanggil fungsi reload data dari HomePage
+        widget.onLocationReload?.call(); 
+      }
     } catch (e) {
-      setState(() => _location = "Lokasi Tidak Aktif");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal Mengambil Lokasi")),
-      );
+      if (mounted) {
+        setState(() => _location = "Lokasi Tidak Aktif");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Gagal Mengambil Lokasi")),
+        );
+      }
     } finally {
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -240,15 +151,22 @@ class _LocationHeaderState extends State<LocationHeader> {
   }
 }
 
+
 // ===========================================
-// BODY HOME PAGE
+// BODY HOME PAGE UTAMA
 // ===========================================
 
 class Bodyhome extends StatelessWidget {
   final List<dynamic> penitipanTerdekat;
   final List<dynamic> ratingTertinggi;
+  final VoidCallback? onLocationReload; // Tambahkan callback untuk reload data
 
-  const Bodyhome({super.key, required this.penitipanTerdekat, required this.ratingTertinggi});
+  const Bodyhome({
+    super.key, 
+    required this.penitipanTerdekat, 
+    required this.ratingTertinggi,
+    this.onLocationReload,
+  });
 
   double parseDouble(dynamic value) {
     if (value == null) return 0.0;
@@ -257,30 +175,57 @@ class Bodyhome extends StatelessWidget {
     return double.tryParse(value.toString()) ?? 0.0;
   }
 
+  // Fungsi untuk menormalisasi data dan menyertakan semua kunci yang diperlukan
+  List<Map<String, dynamic>> normalizeMitraData(List<dynamic> rawList, {required bool isClosest}) {
+    return rawList.map((e) {
+      // 1. Ambil Title dan Path Area
+      final title = e['nama_lokasi'] ?? 'Mitra Tanpa Nama';
+      final pathArea = e['path_area'];
+
+      // 2. Dapatkan Nilai Distance (penting untuk sorting di AllMitraPage)
+      final rawDistance = isClosest 
+          ? parseDouble(e['distance']) 
+          : (e['distance'] != null ? parseDouble(e['distance']) : 9999.0); 
+
+      // 3. Dapatkan Nilai Rating (penting untuk sorting di AllMitraPage)
+      final rawRating = parseDouble(e['rating_mitra_avg_rating'] ?? e['rating'] ?? 0.0);
+
+      // 4. String Durasi/Informasi yang Diformat (untuk BoardingCard di Home Page)
+      String durationString;
+      if (isClosest) {
+        durationString = rawDistance < 9999.0 ? "Jarak: ${rawDistance.toStringAsFixed(1)} km" : "Jarak tidak tersedia";
+      } else {
+        durationString = rawRating > 0.0 ? "Rating: ${rawRating.toStringAsFixed(1)} ⭐" : "Belum ada rating";
+      }
+
+      // 5. Kembalikan map lengkap
+      return {
+        // Data dasar untuk tampilan Home/All
+        'title': title,
+        'path_area': pathArea,
+        'duration': durationString, 
+        
+        // Data MENTAH/RAW untuk SORTING/FILTERING di AllMitraPage
+        'distance': rawDistance, 
+        'rating': rawRating,     
+        
+        // Tambahkan semua data mentah dari API untuk Detail Page
+        ...Map<String, dynamic>.from(e),
+      };
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final terdekat = penitipanTerdekat.map((e) => {
-          'title': e['nama_lokasi'],
-          'duration':
-              parseDouble(e['distance']) > 0 ? "Jarak: ${parseDouble(e['distance']).toStringAsFixed(1)} km" : "Jarak tidak tersedia",
-          'path_area': e['path_area']
-        }).toList();
-
-    final rating = ratingTertinggi.map((e) => {
-          'title': e['nama_lokasi'],
-          'duration': "Rating: ${parseDouble(e['rating_mitra_avg_rating']).toStringAsFixed(1)} ⭐",
-          'path_area': e['path_area']
-        }).toList();
+    // Normalisasi data untuk memastikan semua kunci (distance, rating mentah) ada
+    final terdekatNormalized = normalizeMitraData(penitipanTerdekat, isClosest: true);
+    final ratingNormalized = normalizeMitraData(ratingTertinggi, isClosest: false);
 
     return SingleChildScrollView(
       child: Column(
         children: [
-          LocationHeader(
-            onLocationChanged: (lat, lng) {
-              final homeState = context.findAncestorStateOfType<State>();
-              homeState?.setState(() {});
-            },
-          ),
+          // Meneruskan fungsi reload ke LocationHeader
+          LocationHeader(onLocationReload: onLocationReload),
 
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -289,8 +234,8 @@ class Bodyhome extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    QuickFeatureButton(icon: Icons.receipt_long, label: 'Riwayat'),
-                    QuickFeatureButton(icon: Icons.luggage, label: 'Titip Barang'),
+                    const QuickFeatureButton(icon: Icons.receipt_long, label: 'Riwayat'),
+                    const QuickFeatureButton(icon: Icons.luggage, label: 'Titip Barang'),
                     QuickFeatureButton(
                       icon: Icons.support_agent,
                       label: 'Bantuan',
@@ -306,8 +251,9 @@ class Bodyhome extends StatelessWidget {
 
                 const SizedBox(height: 28),
 
-                HorizontalSection(title: "Titipan Terdekat 📍", dataList: terdekat),
-                HorizontalSection(title: "Rating Tertinggi ⭐", dataList: rating),
+                // Menggunakan data yang sudah dinormalisasi
+                HorizontalSection(title: "Titipan Terdekat 📍", dataList: terdekatNormalized),
+                HorizontalSection(title: "Rating Tertinggi ⭐", dataList: ratingNormalized),
               ],
             ),
           ),
