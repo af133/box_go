@@ -7,6 +7,10 @@ use App\Models\Lokasi;
 class MitraBarang extends Controller
 {
     public function ShowBarangMitra(Request $request){
+        $request->validate([
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric'
+        ]);
         $latitude  = $request->latitude;
         $longitude = $request->longitude;
         $terdekat = Lokasi::with(['mitra'])
