@@ -26,77 +26,24 @@ jobs:
         flutter-version: '3.38.1'
         channel: 'stable'
 
-    - name: Auto-fix Gradle Configuration
+    - name: Upgrade Gradle Wrapper (minimum compatible)
+      working-directory: android
       run: |
-        echo "🔧 AUTO-FIXING GRADLE CONFIGURATION..."
-        
-        # 1. Fix settings.gradle - update plugin versions
-        echo "📝 Updating android/settings.gradle..."
-        sed -i 's/"com.android.application" version "8\.[0-9]\.[0-9]"/"com.android.application" version "8.4.0"/g' android/settings.gradle
-        sed -i 's/"org.jetbrains.kotlin.android" version "1\.[0-9]\.[0-9]*"/"org.jetbrains.kotlin.android" version "1.9.23"/g' android/settings.gradle
-        
-        # 2. Create or update build.gradle
-        echo "📝 Creating/updating android/build.gradle..."
-        cat > android/build.gradle << 'EOF'
-buildscript {
-    ext.kotlin_version = '1.9.23'
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.9.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
+        ./gradlew wrapper --gradle-version 8.7 --distribution-type all
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-rootProject.buildDir = '../build'
-subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(':app')
-}
-
-tasks.register("clean", Delete) {
-    delete rootProject.buildDir
-}
-EOF
-
-        # 3. Update app/build.gradle if exists
+    - name: Fix SDK versions if needed
+      run: |
         if [ -f "android/app/build.gradle" ]; then
-          echo "📝 Updating android/app/build.gradle..."
           sed -i 's/compileSdk [0-9]*/compileSdk 34/g' android/app/build.gradle
           sed -i 's/targetSdk [0-9]*/targetSdk 34/g' android/app/build.gradle
           sed -i 's/minSdk [0-9]*/minSdk 21/g' android/app/build.gradle
-        fi
-
-        echo "✅ AUTO-FIX COMPLETED!"
-
-    - name: Verify Fixed Configuration
-      run: |
-        echo "📊 VERIFICATION:"
-        echo "=== settings.gradle ==="
-        cat android/settings.gradle
-        echo "=== build.gradle ==="
-        cat android/build.gradle
-        if [ -f "android/app/build.gradle" ]; then
-          echo "=== app/build.gradle (SDK versions) ==="
-          grep -E "(compileSdk|targetSdk|minSdk)" android/app/build.gradle
         fi
 
     - name: Install dependencies
       run: flutter pub get
 
     - name: Build APK (Release)
-      run: flutter build apk --release --verbose
+      run: flutter build apk --release
 
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
@@ -107,6 +54,4 @@ EOF
 
     - name: Build Success Notification
       if: success()
-      run: |
-        echo "🎉 BUILD SUCCESSFUL!"
-        echo "📱 APK ready in Artifacts section"
+      run: echo "🎉 APK successfully built and uploaded!"
