@@ -325,10 +325,7 @@ class Bodyhome extends StatelessWidget {
                     icon: Icons.luggage,
                     label: 'Penitipan Barang',
                   ),
-                  QuickFeatureButton(
-                    icon: Icons.local_hospital,
-                    label: 'Layanan Darurat',
-                  ),
+                 
                   QuickFeatureButton(
                     icon: Icons.support_agent,
                     label: 'Pusat Bantuan',

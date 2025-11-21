@@ -17,8 +17,12 @@ class HomePage extends StatefulWidget {
 class _StateHomePage extends State<HomePage> {
   final _auth = AuthController();
   final _penitipan = LokasiMitra();
+
   int currentIndex = 0;
+
   User? user;
+  List<dynamic> lokasiData = [];
+
   @override
   void initState() {
     super.initState();
@@ -28,22 +32,22 @@ class _StateHomePage extends State<HomePage> {
 
   Future<void> loadUser() async {
     final data = await _auth.getUser();
-    setState(() {
-      user = data;
-    });
+    setState(() => user = data);
   }
 
   Future<void> loadPenitipan() async {
-    // ignore: unused_local_variable
-    final penitipan = await _penitipan.getBarang();
+    final data = await _penitipan.getBarang();
+    setState(() {
+      lokasiData = data; // simpan data API
+    });
   }
-   Widget changPage(currentIndex) {
-    switch (currentIndex) {
+
+  Widget changPage(int index) {
+    switch (index) {
       case 0:
-        return Bodyhome();
+        return Bodyhome(); 
       case 1:
         return ProfilePage();
-      // ...
       default:
         return SplashPage();
     }
@@ -51,22 +55,17 @@ class _StateHomePage extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      appBar: currentIndex == 0 ? AppbarHome(
-        name: user?.nama ?? "...",
-        pathProfil: user?.pathProfil ?? '...',
-      ): null,
-      body: changPage(
-         currentIndex,),
+      appBar: currentIndex == 0
+          ? AppbarHome(
+              name: user?.nama ?? "...",
+              pathProfil: user?.pathProfil ?? "...",
+            )
+          : null,
+      body: changPage(currentIndex),
       bottomNavigationBar: Bnavbar(
-         currentIndex: currentIndex,
-        onTap: (index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
+        currentIndex: currentIndex,
+        onTap: (index) => setState(() => currentIndex = index),
       ),
     );
   }
