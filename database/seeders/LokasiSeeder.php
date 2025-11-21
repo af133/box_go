@@ -7,13 +7,9 @@ class LokasiSeeder extends Seeder
     public function run()
     {
         DB::table('lokasi')->insert([
-            ['id_lokasi'=>2,'id_mitra'=>2,'nama_lokasi'=>'Gudang A2','path_area'=>null,'deskripsi'=>'Gudang penyimpanan 2'],
-            ['id_lokasi'=>3,'id_mitra'=>3,'nama_lokasi'=>'Gudang A3','path_area'=>null,'deskripsi'=>'Gudang penyimpanan 3'],
-            ['id_lokasi'=>4,'id_mitra'=>4,'nama_lokasi'=>'Gudang A4','path_area'=>null,'deskripsi'=>'Gudang penyimpanan 4'],
-            ['id_lokasi'=>5,'id_mitra'=>5,'nama_lokasi'=>'Gudang A5','path_area'=>null,'deskripsi'=>'Gudang penyimpanan 5'],
-            ['id_lokasi'=>6,'id_mitra'=>6,'nama_lokasi'=>'Gudang A6','path_area'=>null,'deskripsi'=>'Gudang penyimpanan 6'],
-            ['id_lokasi'=>7,'id_mitra'=>7,'nama_lokasi'=>'Gudang A7','path_area'=>null,'deskripsi'=>'Gudang penyimpanan 7'],
-            ['id_lokasi'=>8,'id_mitra'=>8,'nama_lokasi'=>'Gudang A8','path_area'=>null,'deskripsi'=>'Gudang penyimpanan 8'],
+            ['id_lokasi' => 1, 'id_mitra' => 1, 'nama_lokasi' => 'Warehouse Kaliwates', 'latitude' => -8.1837, 'longitude' => 113.7010],
+            ['id_lokasi' => 2, 'id_mitra' => 2, 'nama_lokasi' => 'Warehouse Patrang',   'latitude' => -8.1617, 'longitude' => 113.7153],
+            ['id_lokasi' => 3, 'id_mitra' => 3, 'nama_lokasi' => 'Warehouse Sumbersari','latitude' => -8.1728, 'longitude' => 113.7080],
         ]);
 
     }

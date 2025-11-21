@@ -33,4 +33,8 @@ class Lokasi extends Model
     {
         return $this->hasMany(AreaGudang::class, 'id_lokasi');
     }
+    public function rating_mitra()
+    {
+        return $this->hasMany(RatingMitra::class, 'id_lokasi');
+    }
 }

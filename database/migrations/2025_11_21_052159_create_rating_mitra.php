@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('polygon', function (Blueprint $table) {
-            $table->id('id_polygon');
-            $table->longText('polygon'); // GeoJSON
+        Schema::create('rating_mitra', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('id_lokasi')->constrained('lokasi','id_lokasi')->onDelete('cascade');
+            $table->integer('rating');
+            $table->text('review')->nullable();
+            $table->timestamps();
         });
-
     }
 
     /**
@@ -23,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('rating_mitra');
     }
 };

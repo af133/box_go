@@ -19,8 +19,6 @@ class Mitra extends Authenticatable
         'nomor_hp',
         'path_profil',
         'alamat',
-        'latitude',
-        'longitude'
 
     ];
      protected $primaryKey = 'id_mitra';

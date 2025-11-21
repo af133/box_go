@@ -3,14 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 use App\Models\Lokasi;
 class MitraBarang extends Controller
 {
-    public function ShowBarangMitra(){
-        $lokasi=Lokasi::with(['area_gudang.polygon','mitra.harga_mitra.jenis_barang'])->get();
+    public function ShowBarangMitra(Request $request){
+        $latitude  = $request->latitude;
+        $longitude = $request->longitude;
+        $terdekat = Lokasi::with(['mitra'])
+            ->select('*')
+            ->selectRaw("(
+                6371 * acos(
+                    cos(radians(?)) * cos(radians(latitude)) *
+                    cos(radians(longitude) - radians(?)) +
+                    sin(radians(?)) * sin(radians(latitude))
+                )
+            ) AS distance", [$latitude, $longitude, $latitude])
+            ->orderBy('distance', 'ASC')
+            ->limit(10)
+            ->get();
+        $ratingTertinggi = Lokasi::with(['mitra'])
+            ->withAvg('ratingMitra', 'rating')
+            ->orderBy('rating_mitra_avg_rating', 'DESC')
+            ->limit(10)
+            ->get();
+
         return response()->json([
-            'lokasi'=>$lokasi
+            'penitipan_terdekat' => $terdekat,
+            'rating_tertinggi' => $ratingTertinggi
         ]);
+       
     }
 }
