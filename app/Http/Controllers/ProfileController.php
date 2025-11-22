@@ -9,16 +9,17 @@ use App\Models\Admin;
 use App\Models\Mitra;
 use App\Models\Pelanggan;
 
-class Profile extends Controller
+class ProfileController extends Controller
 {
     public function update(Request $request){
         if ($request->hasFile('path_profil')) {
-        $cloudinaryResult = cloudinary()->uploadApi()->upload(
-            $request->file('path_profil')->getRealPath(),
-            [
-                'folder' => 'go_box/'.$request->id_email
-            ]
-        );
+        $cloudinary = new Cloudinary();
+        $cloudinaryResult = $cloudinary->uploadApi()->upload(
+                $request->file('path_profil')->getRealPath(),
+                [
+                    'folder' => 'go_box/'.$request->id_email
+                ]
+            );
         $cloudinaryUrl = $cloudinaryResult['secure_url'] ?? null;
         }
         $password=null;
@@ -31,7 +32,7 @@ class Profile extends Controller
                 $admin= Admin::where('id_email',$request->id_email)->update(
                     [
                         'password'=>$password
-                        
+
                         ]
                     );
                     return response()->json([
@@ -52,7 +53,7 @@ class Profile extends Controller
             return response()->json([
                 'role' => 'mitra',
                 'user' => $mitra,
-            ]); 
+            ]);
         }
         if($request->role == 'pelanggan'){
             $pelanggan= Pelanggan::where('id_email',$request->id_email)->update(

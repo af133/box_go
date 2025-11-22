@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Lokasi;
-class MitraBarang extends Controller
+class MitraBarangController extends Controller
 {
     public function ShowBarangMitra(Request $request){
         $request->validate([
@@ -35,6 +35,6 @@ class MitraBarang extends Controller
             'penitipan_terdekat' => $terdekat,
             'rating_tertinggi' => $ratingTertinggi
         ]);
-       
+
     }
 }
