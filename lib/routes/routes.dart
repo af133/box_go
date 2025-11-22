@@ -5,6 +5,7 @@ import 'package:box_go/view/auth/login.dart';
 import 'package:box_go/view/auth/signup.dart';
 import 'package:box_go/view/profile/profile_page.dart';
 import 'package:box_go/view/penitipan/index.dart';
+import 'package:box_go/view/penitipan/detail.dart';
 
 class AppRoutes {
   static const splash = '/';
@@ -13,6 +14,7 @@ class AppRoutes {
   static const signup = '/signup';
   static const profil = '/profile';
   static const allmitra = '/all_mitra';
+  static const detailmitra = '/detail_mitra';
 
   static Map<String, WidgetBuilder> routes = {
     splash: (_) => SplashPage(),
@@ -21,5 +23,6 @@ class AppRoutes {
     signup: (_) => SignUpView(),
     profil: (_) => ProfilePage(),
     allmitra: (_) => AllMitraPage(),
+    detailmitra: (_) => DetailMitraPage()
   };
 }
