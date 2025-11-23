@@ -16,7 +16,7 @@ class Admin extends Authenticatable
     protected $fillable = [
         'id_email'
     ];
-     protected $primaryKey = 'id_mitra';
+    protected $primaryKey = 'id_admin';
     public function email(){
         return $this->belongsTo(Email::class,'id_email');
     }

@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             EmailSeeder::class,
             Pelanggan::class,
             MitraSeeder::class,
+            AdminSeeder::class,
             JenisBarangSeeder::class,
             LokasiSeeder::class,
             PolygonSeeder::class,

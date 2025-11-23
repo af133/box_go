@@ -11,7 +11,8 @@ class EmailSeeder extends Seeder
             ['id_email' => 1, 'email' => 'mitra1@mail.com', 'password' => bcrypt('P@assword123')],
             ['id_email' => 2, 'email' => 'mitra2@mail.com', 'password' => bcrypt('P@assword123')],
             ['id_email' => 3, 'email' => 'mitra3@mail.com', 'password' => bcrypt('P@assword123')],
-            ['id_email' => 4, 'email' => 'pelanga@mail.com', 'password' => bcrypt('P@assword123')],
+            ['id_email' => 4, 'email' => 'pelangan@mail.com', 'password' => bcrypt('P@assword123')],
+            ['id_email' => 5, 'email' => 'admin@mail.com', 'password' => bcrypt('P@assword123')]
         ]);
 
     }

@@ -262,7 +262,7 @@
 
                     // Redirect after 1 second
                     setTimeout(() => {
-                        window.location.href = '/admin/dashboard';
+                        window.location.href = '/admin/profile';
                     }, 1000);
                 } else {
                     // Error

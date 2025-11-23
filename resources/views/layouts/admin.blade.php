@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>@yield('title', 'Admin Dashboard')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom Colors */
         :root {
             --primary-green: #00AA13;
             --dark-gray: #616161;
@@ -55,35 +54,45 @@
             border-left: 4px solid white;
         }
 
-        .menu-icon {
-            transition: transform 0.3s ease;
-        }
-
-        .menu-item:hover .menu-icon {
-            transform: scale(1.1);
-        }
-
-        .topbar {
+        .profile-card {
             background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .profile-dropdown {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        .profile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
         }
 
-        .hamburger-line {
+        .btn-primary {
+            background: linear-gradient(135deg, #00AA13 0%, #008f10 100%);
             transition: all 0.3s ease;
         }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 170, 19, 0.3);
+        }
 
-            .sidebar.mobile-open {
-                transform: translateX(0);
-            }
+        .btn-secondary {
+            background: #F0F0F0;
+            color: #616161;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #E0E0E0;
+        }
+
+        .input-field {
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #00AA13;
+            box-shadow: 0 0 0 3px rgba(0, 170, 19, 0.1);
         }
 
         .badge {
@@ -95,12 +104,38 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
+
+        .notification {
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
     </style>
     @yield('styles')
 </head>
-<body class="min-h-screen">
-    <aside id="sidebar" class="sidebar w-64 fixed md:static h-full z-30">
+<body class="min-h-screen flex">
 
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar w-64 fixed md:static h-full z-30">
         <!-- Logo Section -->
         <div class="p-6 border-b border-white border-opacity-20">
             <div class="flex items-center space-x-3">
@@ -118,79 +153,133 @@
 
         <!-- Navigation Menu -->
         <nav class="p-4 space-y-2">
-
-            <!-- Profil -->
-            <a href="#" class="menu-item active flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="menu-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{{ route('profile') }}" class="menu-item {{ request()->routeIs('admin.profile') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
                 <span class="font-medium">Profil</span>
             </a>
 
-            <!-- List Mitra -->
-            <a href="#" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="menu-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="#" class="menu-item {{ request()->routeIs('admin.mitra.*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                 </svg>
                 <span class="font-medium">List Mitra</span>
                 <span class="badge ml-auto px-2 py-1 text-xs text-white rounded-full">12</span>
             </a>
 
-            <!-- List Pelanggan -->
-            <a href="#" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="menu-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="#" class="menu-item {{ request()->routeIs('admin.pelanggan.*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
                 <span class="font-medium">List Pelanggan</span>
                 <span class="badge ml-auto px-2 py-1 text-xs text-white rounded-full">45</span>
             </a>
 
-            <!-- Mitra Barang -->
-            <a href="#" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="menu-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="#" class="menu-item {{ request()->routeIs('admin.barang.*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                 </svg>
                 <span class="font-medium">Mitra Barang</span>
             </a>
 
-            <!-- Payment -->
-            <a href="#" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="menu-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="#" class="menu-item {{ request()->routeIs('admin.payment.*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                 </svg>
                 <span class="font-medium">Payment</span>
                 <span class="badge ml-auto px-2 py-1 text-xs text-white rounded-full">3</span>
             </a>
-
         </nav>
 
         <!-- Sidebar Footer -->
         <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white border-opacity-20">
-            <a href="#" class="menu-item flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="menu-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                </svg>
-                <span class="font-medium">Logout</span>
-            </a>
-        </div>
-
-    </aside>
-
-    <main class="main-content">
-    <header class="header">
-        <h1>@yield('header', 'Dashboard Owner')</h1>
-        <div>
-            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn-logout">Logout</button>
+                <button type="submit" class="menu-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span class="font-medium">Logout</span>
+                </button>
             </form>
         </div>
-    </header>
+    </aside>
 
-    <section>
-        @yield('content')
-    </section>
+    <!-- Main Content -->
+    <main class="flex-1 md:ml-0 overflow-y-auto">
+        <!-- Top Bar -->
+        <div class="bg-white shadow-sm p-4 md:p-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">@yield('page-title', 'Dashboard')</h1>
+                <p class="text-sm text-gray-500">@yield('page-subtitle', 'Welcome to admin panel')</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Mobile Menu Toggle -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-gray-100">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <!-- User Info -->
+                <div class="hidden md:flex items-center space-x-3">
+                    <img src="{{ Auth::user()->path_profil ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->nama ?? 'Admin').'&background=00AA13&color=fff' }}" alt="Profile" class="w-10 h-10 rounded-full">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-700">{{ Auth::user()->nama ?? 'Admin User' }}</p>
+                        <p class="text-xs text-gray-500">{{ Auth::user()->id_email ?? 'admin@gobox.com' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Area -->
+        @if(session('success'))
+        <div class="notification mx-4 md:mx-6 mt-4 p-4 rounded-lg bg-green-100 border border-green-400 text-green-700">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                {{ session('success') }}
+            </div>
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="notification mx-4 md:mx-6 mt-4 p-4 rounded-lg bg-red-100 border border-red-400 text-red-700">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+                {{ session('error') }}
+            </div>
+        </div>
+        @endif
+
+        <!-- Content Section -->
+        <div class="p-4 md:p-6">
+            @yield('content')
+        </div>
     </main>
+
+    <script>
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('mobile-open');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const isClickInside = sidebar.contains(event.target);
+            const isMenuButton = event.target.closest('button[onclick="toggleMobileMenu()"]');
+
+            if (!isClickInside && !isMenuButton && window.innerWidth < 768) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+    </script>
+
     @yield('scripts')
 </body>
 </html>
