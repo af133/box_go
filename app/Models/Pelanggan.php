@@ -34,4 +34,8 @@ class Pelanggan extends Authenticatable
     {
         return $this->hasMany(Order::class, 'id_pelanggan');
     }
+    public function ratingMitra()
+    {
+        return $this->hasMany(RatingMitra::class, 'id_pelanggan');
+    }
 }

@@ -16,4 +16,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile/update', [Profile::class, 'update']);
     Route::post('/mitra/lokasi/dashboard', [MitraBarang::class, 'ShowBarangMitra']);
+    Route::post('/show/komentar',[MitraBarang::class, 'ShowKomentar']);
+    Route::post('/add/komentar',[MitraBarang::class, 'AddKomentar']);
+
 });

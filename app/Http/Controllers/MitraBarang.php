@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RatingMitra;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use App\Models\Lokasi;
 
@@ -67,5 +69,40 @@ class MitraBarang extends Controller
                 'mitra' => []
             ]);
         }
+    }
+    public function AddKomentar(Request $request){
+   $request->validate([
+        'id_lokasi'=>'required',
+        'rating' => 'required|integer|min:1|max:5',
+        'review'=>'nullable|string',
+        'id_pelanggan'=>'required'
+   ]);
+
+   RatingMitra::create([
+        'id_lokasi' => $request->id_lokasi,
+        'rating' => $request->rating,
+        'review' => $request->review,
+        'id_pelanggan' => $request->id_pelanggan,
+   ]);
+
+   $newAvgRating = RatingMitra::where('id_lokasi', $request->id_lokasi)->avg('rating');
+   $datareview = RatingMitra::with('pelanggan')->where('id_lokasi',$request->id_lokasi)->get();
+
+   return response()->json([
+        'message' => 'Review berhasil dikirim',
+        'reviews' => $datareview,
+        'avg_rating' => round($newAvgRating, 1) 
+   ], 201);
+}
+
+    public function ShowKomentar(Request $request){
+       $request->validate(
+        [
+            'id_lokasi'=>'required',
+        ]);
+        $review = RatingMitra::where('id_lokasi',$request->id_lokasi);
+        return response()->json([
+            'review'=>$review
+        ]);
     }
 }

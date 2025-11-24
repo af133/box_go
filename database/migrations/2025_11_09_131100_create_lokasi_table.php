@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id('id_lokasi');
             $table->foreignId('id_mitra')->constrained('mitra','id_mitra')->onDelete('cascade');
             $table->string('nama_lokasi')->nullable();
-            $table->string('path_area')->nullable();
+            $table->text('path_area')->nullable();
             $table->string('deskripsi')->nullable();
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();

@@ -12,12 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rating_mitra', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('id_lokasi')->constrained('lokasi','id_lokasi')->onDelete('cascade');
+            $table->id('id_rating_mitra');
+            $table->unsignedBigInteger('id_lokasi');
+            $table->unsignedBigInteger('id_pelanggan')->nullable();
             $table->integer('rating');
             $table->text('review')->nullable();
             $table->timestamps();
+
+            $table->foreign('id_lokasi')->references('id_lokasi')->on('lokasi')->onDelete('cascade');
+            $table->foreign('id_pelanggan')->references('id_pelanggan')->on('pelanggan')->onDelete('cascade');
         });
+
     }
 
     /**

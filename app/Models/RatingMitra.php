@@ -9,6 +9,7 @@ class RatingMitra extends Model
     protected $table = 'rating_mitra';
     protected $fillable = [
         'id_lokasi',
+        'id_pelanggan',
         'rating',
         'review',
     ];
@@ -17,4 +18,9 @@ class RatingMitra extends Model
     {
         return $this->belongsTo(Lokasi::class, 'id_lokasi');
     }
+    public function pelanggan()
+    {
+        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
+    }
+
 }
