@@ -160,8 +160,6 @@ class AuthController extends Controller
     }
 }
 
-
-
     // =================== LOGOUT ===================
     public function logout(Request $request)
     {

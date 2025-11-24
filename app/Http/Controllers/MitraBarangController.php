@@ -6,8 +6,9 @@ use App\Models\RatingMitra;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 use App\Models\Lokasi;
+use Illuminate\Support\Facades\Log;
 
-class MitraBarang extends Controller
+class MitraBarangController extends Controller
 {
     public function ShowBarangMitra(Request $request)
     {
@@ -54,7 +55,7 @@ class MitraBarang extends Controller
                     $merged[$id]['rating_mitra_avg_rating'] = $r->rating_mitra_avg_rating ?? 0;
                 } else {
                     $merged[$id] = $r->toArray();
-                    $merged[$id]['distance'] = null; 
+                    $merged[$id]['distance'] = null;
                 }
             }
             $mergedArray = array_values($merged);
@@ -64,7 +65,7 @@ class MitraBarang extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Error dashboard lokasi: '.$e->getMessage());
+            Log::error('Error dashboard lokasi: '.$e->getMessage());
             return response()->json([
                 'mitra' => []
             ]);

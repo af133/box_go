@@ -15,7 +15,7 @@ class Pelanggan extends Seeder
     {
         DB::table('pelanggan')->insert([
             [
-                'id_email' => 3, // harus sudah ada di tabel email
+                'id_email' => 4, // harus sudah ada di tabel email
                 'nama' => 'Budi Santoso',
                 'path_profil' => null,
                 'alamat' => 'Jl. Kalimantan No. 1, Jember',
