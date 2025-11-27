@@ -39,5 +39,11 @@ class Mitra extends Authenticatable
     }
     // Relasi ke HargaMitra
     public function harga_mitra(){
-        return $this->hasMany(HargaMitra::class,'id_mitra');}
+        return $this->hasMany(HargaMitra::class,'id_mitra');
+    }
+
+    public function penarikan_dana()
+    {
+        return $this->hasMany(PenarikanDana::class, 'id_mitra');
+    }
 }

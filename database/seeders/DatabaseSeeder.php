@@ -33,7 +33,6 @@ class DatabaseSeeder extends Seeder
             RatingMitra::class,
             HargaMitraSeeder::class,
             OrderSeeder::class,
-            DetailOrderSeeder::class,
         ]
     );
     }

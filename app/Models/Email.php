@@ -16,12 +16,12 @@ class Email extends Model
         'password'
     ];
     public function admin(){
-        return $this->hasMany(Admin::class,'id_email');
+        return $this->hasOne(Admin::class,'id_email');
     }
     public function pelanggan(){
-        return $this->hasMany(Pelanggan::class,'id_email');
+        return $this->hasOne(Pelanggan::class,'id_email');
     }
     public function mitra(){
-        return $this->hasMany(Mitra::class,'id_email');
+        return $this->hasOne(Mitra::class,'id_email');
     }
 }

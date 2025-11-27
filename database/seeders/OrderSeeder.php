@@ -9,7 +9,7 @@ class OrderSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('order')->insert([
+        DB::table('orders')->insert([
             [
                 'id_pelanggan' => 1,
                 'path_gambar' => null,

@@ -262,7 +262,7 @@
 
                     // Redirect after 1 second
                     setTimeout(() => {
-                        window.location.href = '/admin/profile';
+                        window.location.href = '/admin/list-mitra';
                     }, 1000);
                 } else {
                     // Error

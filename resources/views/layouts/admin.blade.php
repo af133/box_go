@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Dashboard')</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         :root {
             --primary-green: #00AA13;
@@ -21,6 +22,8 @@
             background: linear-gradient(180deg, #00AA13 0%, #008f10 100%);
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+            min-height: 100vh;
+            height: 100%;
         }
 
         .menu-item {
@@ -120,96 +123,157 @@
             }
         }
 
+        /* Sidebar container untuk memastikan sidebar full height */
+        .sidebar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 16rem; /* w-64 */
+            height: 100vh;
+            z-index: 30;
+        }
+
+        .sidebar-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Custom scrollbar untuk sidebar */
+        .sidebar-nav::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .sidebar-nav::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Main content dengan margin kiri untuk sidebar */
+        .main-content {
+            margin-left: 16rem; /* w-64 */
+        }
+
         @media (max-width: 768px) {
-            .sidebar {
+            .sidebar-container {
                 transform: translateX(-100%);
             }
 
-            .sidebar.mobile-open {
+            .sidebar-container.mobile-open {
                 transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            /* Overlay untuk mobile */
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 20;
+            }
+
+            .mobile-overlay.active {
+                display: block;
             }
         }
     </style>
     @yield('styles')
 </head>
-<body class="min-h-screen flex">
+<body class="min-h-screen">
+
+    <!-- Mobile Overlay -->
+    <div id="mobileOverlay" class="mobile-overlay" onclick="toggleMobileMenu()"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar w-64 fixed md:static h-full z-30">
-        <!-- Logo Section -->
-        <div class="p-6 border-b border-white border-opacity-20">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                    <svg class="w-6 h-6" style="color: #00AA13;" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="text-white font-bold text-lg">Admin Panel</h1>
-                    <p class="text-white text-xs opacity-75">Dashboard</p>
+    <aside id="sidebar" class="sidebar-container">
+        <div class="sidebar sidebar-content">
+            <!-- Logo Section -->
+            <div class="p-6 border-b border-white border-opacity-20 flex-shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6" style="color: #00AA13;" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-white font-bold text-lg">Admin Panel</h1>
+                        <p class="text-white text-xs opacity-75">Dashboard</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Navigation Menu -->
-        <nav class="p-4 space-y-2">
-            <a href="{{ route('profile') }}" class="menu-item {{ request()->routeIs('admin.profile') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                </svg>
-                <span class="font-medium">Profil</span>
-            </a>
+            <!-- Navigation Menu -->
+            <div class="sidebar-nav">
+                <nav class="p-4 space-y-2">
+                    <a href="{{ route('admin.mitra.index') }}" class="menu-item {{ request()->routeIs('admin.mitra.index') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span class="font-medium">List Mitra</span>
+                    </a>
 
-            <a href="#" class="menu-item {{ request()->routeIs('admin.mitra.*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                </svg>
-                <span class="font-medium">List Mitra</span>
-                <span class="badge ml-auto px-2 py-1 text-xs text-white rounded-full">12</span>
-            </a>
+                    <a href="{{ route('admin.pelanggan.index') }}" class="menu-item {{ request()->routeIs('admin.pelanggan.index*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span class="font-medium">List Pelanggan</span>
+                    </a>
 
-            <a href="#" class="menu-item {{ request()->routeIs('admin.pelanggan.*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                </svg>
-                <span class="font-medium">List Pelanggan</span>
-                <span class="badge ml-auto px-2 py-1 text-xs text-white rounded-full">45</span>
-            </a>
+                    <a href="{{ route('admin.orders.index') }}" class="menu-item {{ request()->routeIs('admin.orders.index') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                        <span class="font-medium">Order Mitra</span>
+                    </a>
 
-            <a href="#" class="menu-item {{ request()->routeIs('admin.barang.*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                </svg>
-                <span class="font-medium">Mitra Barang</span>
-            </a>
+                    <a href="{{ route('admin.penarikan.index') }}" class="menu-item {{ request()->routeIs('admin.penarikan.index') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span class="font-medium">Penarikan Dana</span>
+                    </a>
+                </nav>
+            </div>
 
-            <a href="#" class="menu-item {{ request()->routeIs('admin.payment.*') ? 'active' : '' }} flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                </svg>
-                <span class="font-medium">Payment</span>
-                <span class="badge ml-auto px-2 py-1 text-xs text-white rounded-full">3</span>
-            </a>
-        </nav>
-
-        <!-- Sidebar Footer -->
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white border-opacity-20">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="menu-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                    </svg>
-                    <span class="font-medium">Logout</span>
-                </button>
-            </form>
+            <!-- Sidebar Footer -->
+            <div class="p-4 border-t border-white border-opacity-20 flex-shrink-0">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="menu-item w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                        </svg>
+                        <span class="font-medium">Logout</span>
+                    </button>
+                </form>
+            </div>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 md:ml-0 overflow-y-auto">
+    <main class="main-content min-h-screen overflow-y-auto">
         <!-- Top Bar -->
-        <div class="bg-white shadow-sm p-4 md:p-6 flex items-center justify-between">
+        <div class="bg-white shadow-sm p-4 md:p-6 flex items-center justify-between sticky top-0 z-10">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">@yield('page-title', 'Dashboard')</h1>
                 <p class="text-sm text-gray-500">@yield('page-subtitle', 'Welcome to admin panel')</p>
@@ -265,18 +329,22 @@
     <script>
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
             sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
         }
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const sidebar = document.getElementById('sidebar');
-            const isClickInside = sidebar.contains(event.target);
-            const isMenuButton = event.target.closest('button[onclick="toggleMobileMenu()"]');
-
-            if (!isClickInside && !isMenuButton && window.innerWidth < 768) {
-                sidebar.classList.remove('mobile-open');
-            }
+        // Auto-hide notifications after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const notifications = document.querySelectorAll('.notification');
+            notifications.forEach(notification => {
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 5000);
+            });
         });
     </script>
 

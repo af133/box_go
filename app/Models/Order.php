@@ -9,17 +9,27 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $table = 'order';
+    protected $table = 'orders';
+    protected $primaryKey = 'id_order';
     protected $fillable = [
         'id_pelanggan',
         'path_gambar',
+        'path_pembayaran',
         'id_jenis_barang',
+        'id_lokasi',
         'tanggal_penitipan',
         'tanggal_pengembalian',
-        'status'=>'pending'
+        'status'
     ];
 
-    public function jenis_barang(){
+    public $timestamps = false;
+
+    protected $attributes = [
+        'status' => 'pending' // default value
+    ];
+
+    public function jenis_barang()
+    {
         return $this->belongsTo(JenisBarang::class,'id_jenis_barang');
     }
     public function pelanggan()
@@ -30,11 +40,6 @@ class Order extends Model
     public function lokasi()
     {
         return $this->belongsTo(Lokasi::class, 'id_lokasi');
-    }
-
-    public function detailOrder()
-    {
-        return $this->hasMany(DetailOrder::class, 'id_order');
     }
 
     public function transaksi()

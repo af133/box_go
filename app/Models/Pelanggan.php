@@ -13,6 +13,7 @@ class Pelanggan extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'pelanggan';
+    protected $primaryKey = 'id_pelanggan';
     public $timestamps = false;
     protected $fillable = [
         'nama',
@@ -21,7 +22,7 @@ class Pelanggan extends Authenticatable
         'alamat',
         'path_profil',
     ];
-     protected $primaryKey = 'id_pelanggan';
+
     public function email(){
         return $this->belongsTo(Email::class,'id_email');
     }

@@ -40,7 +40,7 @@ class ProfileController extends Controller
                         'user' => $admin,
                     ]);
                 }
-        if ($request->role == 'mitra') {
+        else if ($request->role == 'mitra') {
             $mitra= Mitra::where('id_email',$request->id_email)->update(
                 [
                     'nama'=>$request->nama,
@@ -55,7 +55,7 @@ class ProfileController extends Controller
                 'user' => $mitra,
             ]);
         }
-        if($request->role == 'pelanggan'){
+        else if($request->role == 'pelanggan'){
             $pelanggan= Pelanggan::where('id_email',$request->id_email)->update(
                   [
                     'nama'=>$request->nama,

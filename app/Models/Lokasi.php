@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Lokasi extends Model
 {
     use HasFactory;
-     protected $primaryKey = 'id_lokasi';
-
     protected $table = 'lokasi';
+    protected $primaryKey = 'id_lokasi';
 
     protected $fillable = [
         'id_mitra',
@@ -24,11 +23,6 @@ class Lokasi extends Model
     public function mitra()
     {
         return $this->belongsTo(Mitra::class, 'id_mitra');
-    }
-
-    public function order()
-    {
-        return $this->hasMany(DetailOrder::class, 'id_lokasi');
     }
     public function area_gudang()
     {
