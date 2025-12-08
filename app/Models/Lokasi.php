@@ -10,11 +10,10 @@ class Lokasi extends Model
     use HasFactory;
     protected $table = 'lokasi';
     protected $primaryKey = 'id_lokasi';
-
+    public $timestamps = false;
     protected $fillable = [
         'id_mitra',
         'nama_lokasi',
-        'alamat',
         'path_area',
         'deskripsi'
 

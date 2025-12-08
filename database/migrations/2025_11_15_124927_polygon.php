@@ -14,7 +14,7 @@ return new class extends Migration
 
         Schema::create('polygon', function (Blueprint $table) {
             $table->id('id_polygon');
-            $table->longText('polygon'); // GeoJSON
+            $table->longText('polygon'); 
         });
 
     }

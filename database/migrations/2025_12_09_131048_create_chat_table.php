@@ -10,10 +10,12 @@ return new class extends Migration
     {
         Schema::create('chat', function (Blueprint $table) {
             $table->id('id_chat');
+            $table->foreignId('id_lokasi')->nullable()->constrained('lokasi','id_lokasi')->onDelete('cascade');
             $table->foreignId('id_mitra')->nullable()->constrained('mitra','id_mitra')->onDelete('cascade');
             $table->foreignId('id_pelanggan')->nullable()->constrained('pelanggan','id_pelanggan')->onDelete('cascade');
-            $table->text('pesan');
-            
+            $table->text('pesan');  
+            $table->timestamps();
+
         });
 
     }

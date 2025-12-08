@@ -12,12 +12,12 @@ class OrderSeeder extends Seeder
         DB::table('orders')->insert([
             [
                 'id_pelanggan' => 1,
-                'path_gambar' => null,
-                'id_jenis_barang' => 1,
-                'tanggal_penitipan' => Carbon::now()->format('Y-m-d'),
                 'id_lokasi' => 1,
+                'path_gambar' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvo6HMhOf_3PHKU-baly6XDeZ-cQKApO7lww&s',
+                'path_pembayaran' => 'https://www.telkomsel.com/sites/default/files/2024-10/Bukti_Pembayaran_Berbentuk_Invoice.png',
+                'tanggal_penitipan' => Carbon::now()->format('Y-m-d'),
                 'tanggal_pengambilan' => Carbon::now()->addDays(7)->format('Y-m-d'),
-                'status' => 'pending'
+                'status' => 'Diterima',
             ]
         ]);
     }

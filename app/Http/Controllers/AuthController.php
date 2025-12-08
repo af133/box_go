@@ -27,11 +27,13 @@ class AuthController extends Controller
                     'string',
                     'min:8',
                     'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/'
-                ]
+                ],
+                'alamat'=>'required_if:role,mitra|string',
             ], [
                 'email.unique' => 'Email sudah terdaftar',
                 'nama.required' => 'Nama harus diisi',
                 'email.required' => 'Email harus diisi',
+                'alamat.required_if' => 'Alamat harus diisi',
                 'password.required' => 'Password harus diisi',
                 'email.email' => 'Format email tidak valid.',
                 'password.min' => 'Password minimal 8 karakter.',
@@ -42,7 +44,6 @@ class AuthController extends Controller
             return response()->json(['message' => $firstError], 422);
         }
 
-        // Transaction untuk rollback otomatis
         DB::beginTransaction();
         try {
             $email = Email::create([
@@ -64,12 +65,12 @@ class AuthController extends Controller
                 $user=Mitra::create([
                     'id_email' => $email->id_email,
                     'nama' => $request->nama,
+                    'alamat' => $request->alamat,
                 ]);
             }
 
             $user->load('email');
 
-            // Buat token
             $token = $user->createToken('api-token')->plainTextToken;
 
             DB::commit();
@@ -121,7 +122,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'Email atau password salah.'], 401);
         }
 
-        // Ambil instance model sesuai role
         $user = match($request->role) {
             'mitra' => Mitra::where('id_email', $emailModel->id_email)->first(),
             'pelanggan' => Pelanggan::where('id_email', $emailModel->id_email)->first(),
@@ -131,11 +131,9 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json(['message' => 'User tidak ditemukan untuk role ini.'], 404);
         }
-
-        // Pastikan relasi email dimuat
         $user->load('email');
 
-        // Hapus token lama & buat token baru
+
         $user->tokens()->delete();
         $token = $user->createToken('api-token')->plainTextToken;
 

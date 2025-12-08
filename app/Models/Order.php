@@ -19,13 +19,13 @@ class Order extends Model
         'id_lokasi',
         'tanggal_penitipan',
         'tanggal_pengembalian',
-        'status'
+        'status'=>'pending'
     ];
 
     public $timestamps = false;
 
     protected $attributes = [
-        'status' => 'pending' // default value
+        'status' => 'pending'
     ];
 
     public function jenis_barang()
@@ -45,5 +45,9 @@ class Order extends Model
     public function transaksi()
     {
         return $this->hasMany(Transaksi::class, 'id_transaksi');
+    }
+    public function item_orders()
+    {
+        return $this->hasMany(ItemOrder::class, 'id_order', 'id_order');
     }
 }

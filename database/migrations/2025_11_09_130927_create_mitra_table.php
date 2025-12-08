@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id('id_mitra');
             $table->foreignId('id_email')->constrained('email','id_email')->onDelete('cascade');
             $table->string('nama');
-            $table->string('path_profil')->nullable();
+            $table->text('path_profil')->nullable();
             $table->text('alamat');
             $table->string('nomor_hp', 20)->nullable();
             $table->timestamps();
