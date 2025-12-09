@@ -6,6 +6,7 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Lokasi;
+use App\Models\ItemOrder;
 use App\Models\HargaMitra;
 use App\Models\PenarikanDana;
 
@@ -52,30 +53,39 @@ class OrderController extends Controller
 
         return response()->json(['orders' => $orders]);
     }
-    public function ShowAllOrdersMitra(Request $request)
+   public function ShowAllOrdersMitra(Request $request)
     {
         $request->validate([
             'id_mitra' => 'required',
         ]);
         $id_lokasi = Lokasi::where('id_mitra', $request->id_mitra)->pluck('id_lokasi');
-        $orders = Order::whereIn('id_lokasi', $id_lokasi)->get();
+        $orders = Order::with([
+                'pelanggan',
+                'lokasi',
+                'item_orders.jenisBarang'
+            ])
+            ->whereIn('id_lokasi', $id_lokasi)
+            ->orderByDesc('id_order')
+            ->get();
         $total_orders = $orders->count();
-        $id_jenis_barang= $orders->where('status', 'Diterima')->pluck('id_jenis_barang');
-        $total_penghasilan = HargaMitra::whereIn('id_jenis_barang', $id_jenis_barang)
-            ->where('id_mitra', $request->id_mitra)
-            ->sum('harga_sewa');
+        $id_order = $orders->pluck('id_order');
+        $total_penghasilan = ItemOrder::whereIn('id_order', $id_order)
+            ->sum('harga_saat_order');
         $penarikan_dana = PenarikanDana::where('id_mitra', $request->id_mitra)
             ->where('status', 'Diterima')
             ->sum('jumlah_penarikan');
         $saldo_tersedia = $total_penghasilan - $penarikan_dana;
-        $orderanNow = $orders->sortByDesc('id_order')->take(5)->values();
-        $orderAll = $orders->sortByDesc('id_order')->values();
+        $orders->transform(function ($order) {
+            $order->jumlah_item = $order->item_orders->count();
+            $order->total_harga = $order->item_orders->sum('harga_saat_order');
+            return $order;
+        });
         return response()->json([
-            'total_orders' => $total_orders,
+            'total_orders'      => $total_orders,
             'total_penghasilan' => $total_penghasilan,
-            'saldo_tersedia' => $saldo_tersedia,
-            'orderanNow' => $orderanNow,
-            'orderAll' => $orderAll,
+            'saldo_tersedia'    => $saldo_tersedia,
+            'orderanNow'        => $orders->take(5)->values(),
+            'orderAll'          => $orders->values(),
         ]);
     }
 }

@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\PenarikanDana;
+use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PenarikanDanaController extends Controller
 {
     /**
-     * Menampilkan semua data penarikan dana
+     * Menampilkan semua data penarikan dana (untuk admin)
      */
     public function index()
     {
         $penarikan = PenarikanDana::with('mitra')
-            ->orderBy('id', 'desc')
+            ->latest('id')
             ->get();
 
         return response()->json([
@@ -23,36 +25,73 @@ class PenarikanDanaController extends Controller
     }
 
     /**
+     * Menampilkan saldo gabungan penarikan & pemasukan untuk mitra tertentu
+     */
+    public function showSaldoMitra(Request $request, int $idMitra)
+    {
+        // Penarikan dana milik mitra
+        $penarikan = PenarikanDana::where('id_mitra', $idMitra)
+            ->select([
+                'id as id_transaksi',
+                DB::raw("'penarikan' as type"),
+                'jumlah_penarikan as jumlah',
+                'tanggal_penarikan as tanggal',
+                'status'
+            ])
+            ->get();
+
+        // Pemasukan dari order yang diterima
+        $pemasukan = Order::whereHas('lokasi', fn($q) => $q->where('id_mitra', $idMitra))
+            ->where('status', 'Diterima')
+            ->join('item_order', 'orders.id_order', '=', 'item_order.id_order')
+            ->select([
+                'orders.id_order as id_transaksi',
+                DB::raw("'pemasukan' as type"),
+                DB::raw('SUM(item_order.harga_saat_order) as jumlah'),
+                'tanggal_pengambilan as tanggal',
+                DB::raw("'Diterima' as status")
+            ])
+            ->groupBy('orders.id_order', 'tanggal_pengambilan')
+            ->get();
+
+        // Gabungkan dan urutkan berdasarkan tanggal terbaru
+        $saldo = $penarikan->concat($pemasukan)
+            ->sortByDesc('tanggal')
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'data' => $saldo
+        ]);
+    }
+
+    /**
      * Membuat pengajuan penarikan dana baru
      */
-    public function create(Request $request)
+    public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'id_mitra' => 'required|exists:mitras,id_mitra',
             'tanggal_penarikan' => 'required|date',
             'jumlah_penarikan' => 'required|numeric|min:1000',
             'alasan_penarikan' => 'nullable|string',
         ]);
 
-        $data = PenarikanDana::create([
-            'id_mitra' => $request->id_mitra,
-            'tanggal_penarikan' => $request->tanggal_penarikan,
-            'jumlah_penarikan' => $request->jumlah_penarikan,
-            'alasan_penarikan' => $request->alasan_penarikan,
+        $penarikan = PenarikanDana::create(array_merge($validated, [
             'status' => 'pending'
-        ]);
+        ]));
 
         return response()->json([
             'success' => true,
             'message' => 'Pengajuan penarikan berhasil dibuat.',
-            'data' => $data
+            'data' => $penarikan
         ]);
     }
 
     /**
-     * Approve penarikan dana
+     * Menyetujui penarikan dana
      */
-    public function approve($id)
+    public function approve(int $id)
     {
         $penarikan = PenarikanDana::findOrFail($id);
 
@@ -73,9 +112,9 @@ class PenarikanDanaController extends Controller
     }
 
     /**
-     * Reject penarikan dana
+     * Menolak penarikan dana
      */
-    public function reject($id)
+    public function reject(int $id)
     {
         $penarikan = PenarikanDana::findOrFail($id);
 

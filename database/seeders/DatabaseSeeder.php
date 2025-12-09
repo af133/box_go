@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             HargaMitraSeeder::class,
             OrderSeeder::class,
             ItemOrder::class,
+            ChatSeeder::class,
         ]
     );
     }

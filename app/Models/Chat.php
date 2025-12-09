@@ -2,30 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Chat extends Model
 {
-    use HasFactory;
+    protected $fillable = ['id_mitra', 'id_pelanggan'];
 
-    protected $table = 'chat';
-    protected $primaryKey = 'id_chat';
-    protected $keyType = 'int';
-
-    protected $fillable = [
-        'id_pelanggan',
-        'id_mitra',
-        'pesan',
-    ];
-
-    public function pelanggan()
+    public function messages()
     {
-        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
+        return $this->hasMany(Message::class);
     }
 
     public function mitra()
     {
         return $this->belongsTo(Mitra::class, 'id_mitra');
+    }
+
+    public function pelanggan()
+    {
+        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
     }
 }

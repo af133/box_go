@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MitraBarang;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\LokasiMitraController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/dashboard', [OrderController::class, 'ShowOrder']);
     Route::post('/dashboard/mitra', [OrderController::class, 'ShowAllOrdersMitra']);
     Route::post('/jenisBarang', [LokasiMitraController::class, 'JenisBarang']);
+    Route::get('/chats', [ChatController::class, 'index']);
+    Route::get('/chats/{id}', [ChatController::class, 'show']);
+    Route::post('/chats/{chatId}/send', [ChatController::class, 'sendMessage']);
+
 
 
 });
